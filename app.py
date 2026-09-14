@@ -208,57 +208,82 @@ st.markdown(
 
       /* ---------- Chat bubble gaya WhatsApp ---------- */
       [data-testid="stChatMessage"] {
-         position: relative !important; padding: .55rem .78rem !important;
-         max-width: 86% !important; width: max-content !important; min-width: 120px !important;
-         margin-top: .24rem !important; margin-bottom: .24rem !important;
+         position: relative !important; padding: .65rem .9rem !important;
+         max-width: 88% !important; width: fit-content !important; min-width: 120px !important;
+         margin-top: .28rem !important; margin-bottom: .28rem !important;
+         border: none !important; border-radius: 16px !important;
+         box-shadow: 0 4px 14px rgba(20,22,26,.14) !important;
+         backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
+         animation: bubbleIn .42s cubic-bezier(.22,.8,.24,1) both;
+      }
+
+      /* ADMIN → kiri */
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
          align-self: flex-start !important;
-         float: left !important;
-         clear: both !important;
-         border: none !important; border-radius: 14px !important;
-         box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
-         backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+         margin-left: 0 !important; margin-right: auto !important;
+         float: none !important; clear: both !important;
+         background: linear-gradient(135deg, #AEB3B9, #92979E) !important;
+         color: #FFFFFF !important;
+         border-top-left-radius: 5px !important;
          transform-origin: left bottom;
-         animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
       }
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-         align-self: flex-start !important; float: left !important; clear: both !important; margin-right: auto !important; margin-left: 0 !important;
-         background: linear-gradient(135deg, #AEB3B9, #92979E) !important; color: #FFFFFF !important;
-         border-top-left-radius: 5px !important; transform-origin: left bottom;
-      }
+
+      /* USER → kanan */
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         align-self: flex-end !important; float: right !important; clear: both !important; margin-left: auto !important; margin-right: 0 !important;
-         display:flex !important; flex-direction:row !important;
-         background: linear-gradient(135deg, #E5E7EA, #D2D5D9) !important; color: #202124 !important;
-         border-top-right-radius: 5px !important; transform-origin: right bottom;
+         align-self: flex-end !important;
+         margin-left: auto !important; margin-right: 0 !important;
+         float: none !important; clear: both !important;
+         display: flex !important; flex-direction: row !important;
+         width: fit-content !important; max-width: 88% !important;
+         background: linear-gradient(135deg, #F0F1F3, #D5D8DC) !important;
+         color: #202124 !important;
+         border-top-right-radius: 5px !important;
+         transform-origin: right bottom;
+         box-shadow: 0 5px 18px rgba(20,22,26,.16), 0 0 0 rgba(255,255,255,0) !important;
       }
+
+      /* Pastikan wrapper chat memberi ruang penuh kiri-kanan */
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+         left: auto !important; right: auto !important;
+      }
+
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageAvatarUser"] {
-         order:2 !important; margin-left:8px !important; margin-right:0 !important;
+         order: 2 !important; margin-left: 10px !important; margin-right: 0 !important;
       }
+
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageContent"] {
-         order:1 !important; text-align:left !important;
+         order: 1 !important; text-align: left !important;
       }
-      /* Paksa baris chat menjadi area penuh agar bubble USER benar-benar kanan. */
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         position: relative !important;
-         left: auto !important;
-         right: auto !important;
-         margin-left: auto !important;
-         margin-right: 0 !important;
+
+      /* Glow user yang lembut dan mengalir */
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])::after {
+         content: ""; position: absolute; inset: -1px; z-index: -1;
+         border-radius: inherit; pointer-events: none;
+         background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.72) 48%, transparent 72%);
+         background-size: 220% 100%;
+         opacity: .38; filter: blur(7px);
+         animation: userGlow 4.8s cubic-bezier(.45,0,.55,1) infinite;
       }
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-         position: relative !important;
-         left: auto !important;
-         right: auto !important;
+
+      @keyframes userGlow {
+         0%, 18% { background-position: 130% 50%; opacity: 0; }
+         38% { opacity: .22; }
+         55% { background-position: 0% 50%; opacity: .42; }
+         72% { opacity: .18; }
+         88%, 100% { background-position: -30% 50%; opacity: 0; }
       }
 
       @keyframes bubbleIn {
-         0% { opacity:0; transform:translateY(10px) scale(.92); filter:blur(2px); }
-         70% { opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); }
+         0% { opacity:0; transform:translateY(9px) scale(.94); filter:blur(2px); }
+         65% { opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); }
          100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
       }
+
       @media (prefers-reduced-motion: reduce) {
          [data-testid="stChatMessage"] { animation:none !important; }
+         [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])::after { animation:none !important; }
       }
+
       [data-testid="stChatMessageContent"] p { margin-bottom: .12rem !important; line-height: 1.45 !important; }
 
       /* ---------- Input seperti composer WhatsApp ---------- */
