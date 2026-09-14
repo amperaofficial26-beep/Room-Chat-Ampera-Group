@@ -156,27 +156,22 @@ st.markdown(
          50% { transform: translate3d(3%, 2%, 0) scale(1.06); }
          100% { transform: translate3d(-1%, 4%, 0) scale(1.02); }
       }
-      /* ---------- Logo + glow berjalan ---------- */
-      .logo-wrap { position:relative; width:96px; height:96px; margin:.2rem auto .3rem;
-        display:flex; align-items:center; justify-content:center; }
+      /* ---------- Logo Ampera Official ---------- */
+      .logo-wrap { position:relative; width:150px; height:150px; margin:.15rem auto .35rem;
+        display:flex; align-items:center; justify-content:center; overflow:hidden;
+        border-radius:24px; background:rgba(255,255,255,.20);
+        border:1px solid rgba(255,255,255,.58);
+        box-shadow:0 10px 30px rgba(25,27,32,.16), inset 0 1px 0 rgba(255,255,255,.65);
+        backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
       .logo-wrap::before {
-        content:""; position:absolute; inset:-7px; border-radius:50%;
-        background: conic-gradient(from 0deg,
-          transparent 0deg, #FFFFFF 35deg, #C9CAD1 70deg, transparent 110deg,
-          transparent 250deg, #D8D9DE 300deg, #FFFFFF 330deg, transparent 360deg);
-        filter: blur(7px);
-        animation: putarGlow 5s linear infinite;
+        content:""; position:absolute; inset:-45%;
+        background:conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,.75) 55deg, transparent 105deg, transparent 220deg, rgba(255,255,255,.45) 285deg, transparent 330deg);
+        animation:putarGlow 6s linear infinite; pointer-events:none;
       }
-      .logo-wrap::after {
-        content:""; position:absolute; inset:-2px; border-radius:50%;
-        background: rgba(255,255,255,0.55);
-        backdrop-filter: blur(6px);
-        border: 1px solid rgba(255,255,255,0.8);
-      }
-      .logo-wrap img { position:relative; z-index:2; width:76px; height:76px;
-        border-radius:50%; object-fit:cover;
-        box-shadow: 0 4px 16px rgba(30,30,40,0.18); background:#fff; }
-      @keyframes putarGlow { to { transform: rotate(360deg); } }
+      .logo-wrap img { position:relative; z-index:2; width:100%; height:100%;
+        object-fit:cover; display:block; border-radius:22px;
+        box-shadow:0 5px 18px rgba(20,22,26,.18); }
+      @keyframes putarGlow { to { transform:rotate(360deg); } }
 
       /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
       .room-head { text-align:center; padding:.3rem 0 .5rem; }
@@ -204,19 +199,29 @@ st.markdown(
          position: relative !important; padding: .55rem .78rem !important;
          max-width: 78% !important; width: fit-content !important; min-width: 80px !important;
          margin-top: .24rem !important; margin-bottom: .24rem !important;
-         border: none !important; border-radius: 12px !important;
-         box-shadow: 0 2px 7px rgba(20,22,26,.12) !important;
+         border: none !important; border-radius: 14px !important;
+         box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
          backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+         transform-origin: left bottom;
+         animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
          margin-right: auto !important; margin-left: 0 !important;
-         background: rgba(255,255,255,.88) !important; color: #202126 !important;
-         border-top-left-radius: 4px !important;
+         background: linear-gradient(135deg, #AEB3B9, #92979E) !important; color: #FFFFFF !important;
+         border-top-left-radius: 5px !important; transform-origin: left bottom;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
          margin-left: auto !important; margin-right: 0 !important; flex-direction: row-reverse !important;
-         background: rgba(220,248,199,.94) !important; color: #172018 !important;
-         border-top-right-radius: 4px !important;
+         background: linear-gradient(135deg, #E5E7EA, #D2D5D9) !important; color: #202124 !important;
+         border-top-right-radius: 5px !important; transform-origin: right bottom;
+      }
+      @keyframes bubbleIn {
+         0% { opacity:0; transform:translateY(10px) scale(.92); filter:blur(2px); }
+         70% { opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); }
+         100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+         [data-testid="stChatMessage"] { animation:none !important; }
       }
       [data-testid="stChatMessageContent"] p { margin-bottom: .12rem !important; line-height: 1.45 !important; }
 
@@ -353,7 +358,7 @@ st.markdown(
 
 
 def _logo_html() -> str:
-    return f'<div class="logo-wrap"><img src="{LOGO_URL}" onerror="this.parentElement.innerHTML=\'🔱\';this.parentElement.style.fontSize=\'2.4rem\';" /></div>'
+    return f'<div class="logo-wrap"><img src="{LOGO_URL}" alt="Ampera Official Group" onerror="this.parentElement.innerHTML=\'🔱\';this.parentElement.style.fontSize=\'2.4rem\';" /></div>'
 
 
 def _sapaan_pembuka(nama: str) -> str:
@@ -483,8 +488,7 @@ def halaman_room() -> None:
     for m in st.session_state.pesan:
         _bubble(m)
 
-    # Tombol Keluar — mengambang di pojok kanan bawah (lihat CSS
-    # ".anchor-keluar" di atas untuk cara kerjanya).
+    # Tombol Keluar — mengambang di pojok kanan atas.
     st.markdown('<span class="anchor-keluar"></span>', unsafe_allow_html=True)
     if st.button("🚪 Keluar", key="btn_keluar"):
         for k in ("masuk", "nama", "tag", "kontak", "pesan",
