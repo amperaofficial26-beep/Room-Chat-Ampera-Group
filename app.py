@@ -295,14 +295,6 @@ st.markdown(
       ) [data-testid="stChatMessageContent"] {
          text-align: left !important;
       }
-      
-      @keyframes userGlow {
-         0%, 18% { background-position: 130% 50%; opacity: 0; }
-         38% { opacity: .22; }
-         55% { background-position: 0% 50%; opacity: .42; }
-         72% { opacity: .18; }
-         88%, 100% { background-position: -30% 50%; opacity: 0; }
-      }
 
       @keyframes bubbleIn {
          0% { opacity:0; transform:translateY(9px) scale(.94); filter:blur(2px); }
