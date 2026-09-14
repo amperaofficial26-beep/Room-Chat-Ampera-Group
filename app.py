@@ -29,7 +29,7 @@ WIB = ZoneInfo("Asia/Jakarta")
 
 st.set_page_config(
     page_title="Room Chat Ampera Official",
-    page_icon="🔱",
+    page_icon=":material/forum:",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
@@ -71,7 +71,7 @@ def kirim_ke_admin(nama: str, tag: str, kontak: str, pesan: str) -> bool:
         "Pesan": pesan,
         "Kontak": kontak or "(tidak diisi)",
         "Waktu (WIB)": jam_wib(),
-        "_subject": f"💬 {nama} #{tag}: {pesan[:40]}",
+        "_subject": f"Pesan Room Chat — {nama} #{tag}: {pesan[:40]}",
         "_template": "table",
         "_captcha": "false",
         "_cc": EMAIL_CC,
@@ -159,45 +159,38 @@ st.markdown(
          100% { transform: translate3d(-1%, 4%, 0) scale(1.02); }
       }
       /* ---------- Logo Ampera Official ---------- */
-      .logo-wrap { position:relative; width:142px; height:142px; margin:.15rem auto .8rem;
+      .logo-wrap { position:relative; width:150px; height:150px; margin:.15rem auto .35rem;
+        transform:translateX(-10px);
         display:flex; align-items:center; justify-content:center; overflow:hidden;
-        border-radius:25px; background:rgba(255,255,255,.18);
-        border:1px solid rgba(255,255,255,.68);
-        box-shadow:0 12px 34px rgba(25,27,32,.18), inset 0 1px 0 rgba(255,255,255,.75);
-        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);transform: translateX(-10px); }
-      .logo-wrap img { position:relative; z-index:2; width:100%; height:100%;
-        object-fit:cover; display:block; border-radius:23px;
-        box-shadow:0 5px 18px rgba(20,22,26,.18); }
-      /* Kilatan putih bergerak dari kiri ke kanan melewati logo */
-      .logo-wrap::after { content:""; position:absolute; z-index:3; top:-20%; bottom:-20%; left:-65%; width:42%;
-        transform:skewX(-20deg); pointer-events:none;
-        background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,.96) 50%, rgba(255,255,255,.18) 78%, transparent 100%);
-        filter:blur(7px); mix-blend-mode:screen;
-        animation:logoShine 3.8s cubic-bezier(.45,0,.25,1) infinite; }
-      .logo-wrap::before { content:""; position:absolute; z-index:1; inset:-2px; border-radius:27px;
-        box-shadow:0 0 0 1px rgba(255,255,255,.35), 0 0 22px rgba(255,255,255,.18);
-        pointer-events:none; }
-      @keyframes logoShine {
-        0%, 18% { left:-65%; opacity:0; }
-        28% { opacity:1; }
-        62% { left:125%; opacity:1; }
-        70%, 100% { left:125%; opacity:0; }
+        border-radius:24px; background:rgba(255,255,255,.20);
+        border:1px solid rgba(255,255,255,.58);
+        box-shadow:0 10px 30px rgba(25,27,32,.16), inset 0 1px 0 rgba(255,255,255,.65);
+        backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+      .logo-wrap::before {
+        content:""; position:absolute; inset:-45%;
+        background:conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,.75) 55deg, transparent 105deg, transparent 220deg, rgba(255,255,255,.45) 285deg, transparent 330deg);
+        animation:putarGlow 6s linear infinite; pointer-events:none;
       }
+      .logo-wrap img { position:relative; z-index:2; width:100%; height:100%;
+        object-fit:cover; display:block; border-radius:22px;
+        box-shadow:0 5px 18px rgba(20,22,26,.18); }
+      .logo-fallback { font-family:Georgia,serif; font-size:2.2rem; font-weight:700; color:#2B2B31; }
+      @keyframes putarGlow { to { transform:rotate(360deg); } }
 
       /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
-      .room-head { text-align: center;padding: .3rem 0 .5rem; transform: translateX(55px); }
+      .room-head { text-align:center; padding:.3rem 0 .5rem; transform:translateX(55px); }
       .room-head .judul { font-family:Georgia,"Times New Roman",serif;
-        font-weight:600; font-size:1.42rem; letter-spacing:.13em; margin:0;
-        text-transform:uppercase; color:#292A30; line-height:1.2; }
-      .room-head .sub { font-size:.62rem; letter-spacing:.38em; color:#85868F;
-        margin-top:8px; font-weight:700; }
-      .room-head .garis { width:46px; height:2px; margin:.62rem auto 0;
-        border-radius:999px; background:linear-gradient(90deg,transparent,#A8AAB2,transparent); }
+        font-weight:600; font-size:1.55rem; letter-spacing:.16em; margin:0;
+        text-transform:uppercase; color:#2B2B31; }
+      .room-head .sub { font-size:.68rem; letter-spacing:.32em; color:#8A8A93;
+        margin-top:7px; font-weight:600; }
+      .room-head .garis { width:38px; height:1px; margin:.55rem auto 0;
+        background:linear-gradient(90deg,transparent,#B9B9C2,transparent); }
 
       /* ---------- Kartu kaca dasar ---------- */
       [data-testid="stVerticalBlockBorderWrapper"],
       [data-testid="stExpander"] details {
-         background: rgba(255,255,255,0.30) !important;
+         background: rgba(255,255,255,0.34) !important;
          backdrop-filter: blur(22px) saturate(150%) !important;
          -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
          border: 1px solid rgba(255,255,255,0.48) !important;
@@ -207,9 +200,9 @@ st.markdown(
 
       /* ---------- Chat bubble gaya WhatsApp ---------- */
       [data-testid="stChatMessage"] {
-         position: relative !important; padding: .55rem .82rem !important;
-         max-width: 76% !important; width: fit-content !important; min-width: 92px !important;
-         margin-top: .22rem !important; margin-bottom: .22rem !important;
+         position: relative !important; padding: .55rem .78rem !important;
+         max-width: 78% !important; width: fit-content !important; min-width: 80px !important;
+         margin-top: .24rem !important; margin-bottom: .24rem !important;
          border: none !important; border-radius: 14px !important;
          box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
          backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
@@ -227,12 +220,10 @@ st.markdown(
          border-top-right-radius: 5px !important; transform-origin: right bottom;
       }
       @keyframes bubbleIn {
-         0% { opacity:0; transform:translateY(9px) scale(.94); filter:blur(2px); }
+         0% { opacity:0; transform:translateY(10px) scale(.92); filter:blur(2px); }
          70% { opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); }
          100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
       }
-      [data-testid="stChatMessage"] p { margin:.08rem 0 !important; line-height:1.48 !important; }
-      [data-testid="stChatMessage"] .admin-badge { vertical-align:middle; }
       @media (prefers-reduced-motion: reduce) {
          [data-testid="stChatMessage"] { animation:none !important; }
       }
@@ -355,16 +346,14 @@ st.markdown(
          transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,.84) !important;
       }
       @media (min-width: 700px) { .room-head { padding-right: 115px; } }
-      @media (max-width: 600px) {
-        .logo-wrap { width:122px; height:122px; border-radius:22px; }
-        .logo-wrap img { border-radius:20px; }
-        .room-head .judul { font-size:1.12rem; letter-spacing:.10em; }
-        .room-head .sub { font-size:.56rem; letter-spacing:.28em; }
-        [data-testid="stChatMessage"] { max-width:84% !important; }
+      @media (max-width: 699px) {
+        .logo-wrap { transform:translateX(-10px) scale(.90); }
+        .room-head { transform:translateX(0); }
+        .room-head .judul { font-size:1.18rem; letter-spacing:.10em; }
       }
       /* ---------- Elemen kecil ---------- */
-      .admin-badge { display:inline-block; font-size:.60rem; font-weight:700;
-        color:#35363B; background:rgba(235,235,240,0.55);
+      .admin-badge { display:inline-block; font-size:.64rem; font-weight:700;
+        color:#3A3A40; background:rgba(200,200,210,0.35);
         border:1px solid rgba(180,180,192,0.5);
         border-radius:999px; padding:1px 9px; margin-left:6px;
         backdrop-filter: blur(6px); }
@@ -377,12 +366,14 @@ st.markdown(
 )
 
 
+def _logo_path() -> str:
+    return str((Path(__file__).resolve().parent / LOGO_URL).resolve())
+
+
 def _logo_html() -> str:
-    # Embed logo sebagai data URI agar gambar lokal repo selalu terbaca,
-    # termasuk saat working directory Streamlit berbeda.
+    # Embed logo sebagai data URI agar gambar lokal repository tetap tampil.
     try:
-        logo_path = Path(__file__).resolve().parent / LOGO_URL
-        with open(logo_path, "rb") as f:
+        with open(_logo_path(), "rb") as f:
             logo_b64 = base64.b64encode(f.read()).decode("utf-8")
         logo_src = f"data:image/png;base64,{logo_b64}"
         return f'<div class="logo-wrap"><img src="{logo_src}" alt="Ampera Official Group" /></div>'
@@ -392,20 +383,22 @@ def _logo_html() -> str:
 
 def _sapaan_pembuka(nama: str) -> str:
     return (
-        f"Hai {nama}! 👋 Selamat datang di Room Chat Ampera Official. "
+        f"Hai {nama}! :material/waving_hand: Selamat datang di Room Chat Ampera Official. "
         "Tulis pesanmu di kotak paling bawah — mau tanya-tanya produk, "
         "harga, atau langganan, semuanya langsung terkirim ke admin "
         "Ampera Official. Pesanmu di room ini cuma dilihat oleh kamu dan "
-        "admin 😉"
+        "admin :material/sentiment_satisfied:."
     )
 
 
 def _bubble(m: dict) -> None:
     resmi = bool(m.get("resmi"))
     label = f"**{html.escape(str(m.get('pengirim', 'Seseorang')))}**" + (
-        '<span class="admin-badge">👑 RESMI</span>' if resmi else "")
-    with st.chat_message("assistant" if resmi else "user",
-                         avatar="🔱" if resmi else None):
+        " :material/verified: **RESMI**" if resmi else "")
+
+    # Admin memakai logo AOG sebagai avatar; user memakai Material Icon person.
+    avatar = _logo_path() if resmi else ":material/person:"
+    with st.chat_message("assistant" if resmi else "user", avatar=avatar):
         st.markdown(
             f"{label}  \n{html.escape(str(m.get('teks', '')))}  \n"
             f'<span class="jam">{html.escape(str(m.get("jam", "")))}</span>',
@@ -453,7 +446,7 @@ def halaman_masuk() -> None:
                      key="btn_masuk"):
             nama_bersih = " ".join((nama or "").split())
             if not nama_bersih:
-                st.warning("Isi dulu nama panggilanmu ya.")
+                st.warning("Isi dulu nama panggilanmu.")
             elif ("ampera" in nama_bersih.lower()
                   and "official" in nama_bersih.lower()):
                 st.error("Nama itu khusus admin resmi. Pilih nama lain ya.")
@@ -489,20 +482,15 @@ def halaman_room() -> None:
         f'margin-bottom:.4rem;">Masuk sebagai: {identitas}</div>',
         unsafe_allow_html=True,
     )
-    st.markdown(
-        '<div style="text-align:center;color:#686A72;font-size:.78rem;'
-        'margin:.05rem 0 .7rem;line-height:1.45;">⚡ Setiap pesanmu langsung '
-        'terkirim ke admin Ampera Official.</div>',
-        unsafe_allow_html=True,
-    )
+    st.caption(":material/bolt: Setiap pesanmu langsung terkirim ke admin Ampera Official.")
 
     # Panel kontak kecil di sisi kiri — bisa diisi / diganti kapan saja,
     # ikut terkirim di pesan berikutnya, jadi admin tahu harus membalas
     # ke mana.
-    col_kontak, _ = st.columns([1.15, 1.85])
+    col_kontak, _ = st.columns([1, 2])
     with col_kontak:
         st.markdown('<div class="panel-kontak">', unsafe_allow_html=True)
-        with st.expander("✏️ Kontak", expanded=False):
+        with st.expander(":material/edit: Kontak", expanded=False):
             st.caption(
                 f"Saat ini: {st.session_state.kontak or 'belum diisi'}"
             )
@@ -515,7 +503,7 @@ def halaman_room() -> None:
             if st.button("Simpan", key="btn_simpan_kontak"):
                 st.session_state.kontak = " ".join((baru or "").split())
                 st.session_state.pop("in_kontak_edit", None)
-                st.toast("Kontak kamu tersimpan ✅")
+                st.toast(":material/check_circle: Kontak kamu tersimpan")
                 st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -524,7 +512,7 @@ def halaman_room() -> None:
 
     # Tombol Keluar — mengambang di pojok kanan atas.
     st.markdown('<span class="anchor-keluar"></span>', unsafe_allow_html=True)
-    if st.button("🚪 Keluar", key="btn_keluar"):
+    if st.button(":material/logout: Keluar", key="btn_keluar"):
         for k in ("masuk", "nama", "tag", "kontak", "pesan",
                   "in_kontak_edit"):
             st.session_state.pop(k, None)
@@ -545,10 +533,10 @@ def halaman_room() -> None:
             st.session_state.kontak,
             bersih,
         ):
-            st.toast("Pesan terkirim ke admin Ampera Official ✅")
+            st.toast(":material/check_circle: Pesan terkirim ke admin Ampera Official")
         else:
-            st.toast("Pesan tampil di sini, tapi gagal terkirim ke admin — "
-                     "coba kirim ulang ya ⚠️")
+            st.toast(":material/warning: Pesan tampil di sini, tapi gagal terkirim ke admin — "
+                     "coba kirim ulang ya")
         st.rerun()
 
 
