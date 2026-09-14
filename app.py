@@ -206,58 +206,120 @@ st.markdown(
          box-shadow: 0 8px 26px rgba(25,27,32,0.12), inset 0 1px 0 rgba(255,255,255,0.55) !important;
       }
 
-    /* ---------- CHAT BUBBLE ---------- */
-    
-    [data-testid="stChatMessage"] {
-        position: relative !important;
-    
-        width: fit-content !important;
-        max-width: 86% !important;
-        min-width: 120px !important;
-    
-        margin-top: .24rem !important;
-        margin-bottom: .24rem !important;
-    
-        border: none !important;
-        border-radius: 14px !important;
-    
-        box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
-    
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-    
-        animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
-    }
-    
-    
-    /* ADMIN → KIRI */
-    [data-testid="stChatMessage"]:has(
-        [data-testid="stChatMessageAvatarAssistant"]
-    ) {
-        margin-left: 0 !important;
-        margin-right: auto !important;
-    
-        align-self: flex-start !important;
-    }
-    
-    
-    /* USER → KANAN */
-    [data-testid="stChatMessage"]:has(
-        [data-testid="stChatMessageAvatarUser"]
-    ) {
-        margin-left: auto !important;
-        margin-right: 0 !important;
-    
-        align-self: flex-end !important;
-    }
-    
-    
-    /* USER CONTENT */
-    [data-testid="stChatMessage"]:has(
-        [data-testid="stChatMessageAvatarUser"]
-    ) [data-testid="stChatMessageContent"] {
-        text-align: left !important;
-    }
+        /* =========================================================
+           CHAT BUBBLE — FIX POSISI KIRI / KANAN
+           ========================================================= */
+        
+        /* CONTAINER INDUK CHAT HARUS FULL WIDTH */
+        div:has(> [data-testid="stChatMessage"]) {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        
+        /* ---------- BUBBLE DASAR ---------- */
+        
+        [data-testid="stChatMessage"] {
+            position: relative !important;
+        
+            width: fit-content !important;
+            max-width: 86% !important;
+            min-width: 120px !important;
+        
+            margin-top: .24rem !important;
+            margin-bottom: .24rem !important;
+        
+            border: none !important;
+            border-radius: 14px !important;
+        
+            box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
+        
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+        
+            animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
+        }
+        
+        
+        /* =========================================================
+           ADMIN → KIRI
+           ========================================================= */
+        
+        div:has(> [data-testid="stChatMessage"])
+        [data-testid="stChatMessage"]:has(
+            [data-testid="stChatMessageAvatarAssistant"]
+        ) {
+            align-self: flex-start !important;
+        
+            margin-left: 0 !important;
+            margin-right: auto !important;
+        
+            background: linear-gradient(
+                135deg,
+                #AEB3B9,
+                #92979E
+            ) !important;
+        
+            color: #FFFFFF !important;
+        
+            border-top-left-radius: 5px !important;
+        
+            transform-origin: left bottom;
+        }
+        
+        
+        /* =========================================================
+           USER → KANAN
+           ========================================================= */
+        
+        div:has(> [data-testid="stChatMessage"])
+        [data-testid="stChatMessage"]:has(
+            [data-testid="stChatMessageAvatarUser"]
+        ) {
+            align-self: flex-end !important;
+        
+            margin-left: auto !important;
+            margin-right: 0 !important;
+        
+            background: linear-gradient(
+                135deg,
+                #E5E7EA,
+                #D2D5D9
+            ) !important;
+        
+            color: #202124 !important;
+        
+            border-top-right-radius: 5px !important;
+        
+            transform-origin: right bottom;
+        }
+        
+        
+        /* ---------- USER AVATAR ---------- */
+        
+        [data-testid="stChatMessage"]:has(
+            [data-testid="stChatMessageAvatarUser"]
+        )
+        [data-testid="stChatMessageAvatarUser"] {
+            margin-left: 8px !important;
+            margin-right: 0 !important;
+        }
+        
+        
+        /* ---------- ISI BUBBLE ---------- */
+        
+        [data-testid="stChatMessageContent"] {
+            text-align: left !important;
+        }
+        
+        
+        /* ---------- PARAGRAF ---------- */
+        
+        [data-testid="stChatMessageContent"] p {
+            margin-bottom: .12rem !important;
+            line-height: 1.45 !important;
+        }
       
        @keyframes userGlow {
          0%, 18% { background-position: 130% 50%; opacity: 0; }
