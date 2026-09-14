@@ -164,7 +164,7 @@ st.markdown(
         border-radius:25px; background:rgba(255,255,255,.18);
         border:1px solid rgba(255,255,255,.68);
         box-shadow:0 12px 34px rgba(25,27,32,.18), inset 0 1px 0 rgba(255,255,255,.75);
-        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);transform: translateX(50px); }
+        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);transform: translateX(40px); }
       .logo-wrap img { position:relative; z-index:2; width:100%; height:100%;
         object-fit:cover; display:block; border-radius:23px;
         box-shadow:0 5px 18px rgba(20,22,26,.18); }
@@ -185,7 +185,7 @@ st.markdown(
       }
 
       /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
-      .room-head { text-align: center;padding: .3rem 0 .5rem; transform: translateX(50px); }
+      .room-head { text-align: center;padding: .3rem 0 .5rem; transform: translateX(55px); }
       .room-head .judul { font-family:Georgia,"Times New Roman",serif;
         font-weight:600; font-size:1.42rem; letter-spacing:.13em; margin:0;
         text-transform:uppercase; color:#292A30; line-height:1.2; }
