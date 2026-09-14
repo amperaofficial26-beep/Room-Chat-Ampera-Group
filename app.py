@@ -2,14 +2,15 @@
 """
 Ampera Official Group — room chat resmi Ampera Official.
 
-App Streamlit terpisah (repo sendiri: ampera-official-group).
+App Streamlit terpisah (repo sendiri).
 TANPA database, TANPA Supabase, TANPA secrets: setiap pesan yang dikirim
-user langsung diteruskan ke inbox email admin (amperaofficialgroup@gmail.com)
-lewat FormSubmit (formsubmit.co) — layanan form-to-email gratis tanpa API key.
+user langsung diteruskan ke inbox email admin lewat FormSubmit
+(formsubmit.co) — layanan form-to-email gratis tanpa API key.
 
 PENTING (sekali saja, waktu pertama dipakai): kirim satu pesan tes dari
-room ini, lalu buka Gmail amperaofficialgroup@gmail.com dan klik link
-AKTIVASI dari FormSubmit. Setelah diklik, semua pesan masuk terus ke inbox.
+room ini, lalu buka Gmail admin dan klik link AKTIVASI dari FormSubmit.
+Setelah diklik, semua pesan (termasuk yang tertahan sebelumnya) masuk
+terus ke inbox.
 """
 
 from __future__ import annotations
@@ -34,8 +35,9 @@ st.set_page_config(
 # ---------------------------------------------------------------------------
 # PENGATURAN
 # ---------------------------------------------------------------------------
-EMAIL_ADMIN = "saputraampera26@gmail.com"  # inbox tujuan semua pesan
-BATAS_PESAN = 2000                            # panjang maksimum 1 pesan
+EMAIL_ADMIN = "saputraampera26@gmail.com"    # inbox utama tujuan pesan
+EMAIL_CC = "amperaofficialgroup@gmail.com"   # dapat kopian tiap pesan
+BATAS_PESAN = 2000                           # panjang maksimum 1 pesan
 _TIMEOUT = 15
 
 
@@ -56,7 +58,12 @@ def _mirip_email(teks: str) -> bool:
 # KIRIM PESAN KE EMAIL ADMIN (FormSubmit — gratis, tanpa API key)
 # ---------------------------------------------------------------------------
 def kirim_ke_admin(nama: str, tag: str, kontak: str, pesan: str) -> bool:
-    """Teruskan pesan user ke inbox admin. True kalau berhasil."""
+    """Teruskan pesan user ke inbox admin.
+
+    Selain nilai True/False, hasil lengkapnya (jawaban mentah FormSubmit)
+    disimpan ke st.session_state.debug_kirim supaya bisa dilihat di panel
+    "Info teknis" — berguna kalau pesan tidak kunjung sampai.
+    """
     data = {
         "name": f"{nama} #{tag}",
         "Pesan": pesan,
@@ -65,8 +72,9 @@ def kirim_ke_admin(nama: str, tag: str, kontak: str, pesan: str) -> bool:
         "_subject": f"💬 {nama} #{tag}: {pesan[:40]}",
         "_template": "table",
         "_captcha": "false",
+        "_cc": EMAIL_CC,
     }
-    # Kalau user mengisi email, jadikan Reply-To: di Gmail kamu tinggal tekan
+    # Kalau user mengisi email, jadikan Reply-To: di Gmail tinggal tekan
     # tombol "Balas" dan jawabannya langsung menuju email user tersebut.
     if _mirip_email(kontak):
         data["email"] = kontak
@@ -74,11 +82,31 @@ def kirim_ke_admin(nama: str, tag: str, kontak: str, pesan: str) -> bool:
         r = requests.post(
             f"https://formsubmit.co/ajax/{EMAIL_ADMIN}",
             json=data,
-            headers={"Accept": "application/json"},
+            headers={
+                "Accept": "application/json",
+                # Header ala browser biasa — FormSubmit kadang memfilter
+                # kiriman yang terlihat seperti bot (python-requests).
+                "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                               "AppleWebKit/537.36 (KHTML, like Gecko) "
+                               "Chrome/126.0.0.0 Safari/537.36"),
+            },
             timeout=_TIMEOUT,
         )
-        return r.status_code == 200
-    except Exception:
+        status = r.status_code
+        potongan = " ".join(((r.text or "")[:250]).split())
+        ok = status == 200
+        try:
+            isi = r.json()
+            if str(isi.get("success", "")).lower() != "true":
+                ok = False
+        except Exception:
+            ok = False
+        st.session_state.debug_kirim = (
+            f"{'OK' if ok else 'GAGAL'} · HTTP {status} · {potongan}")
+        return ok
+    except Exception as e:
+        st.session_state.debug_kirim = (
+            f"GAGAL · KONEKSI · {type(e).__name__}: {str(e)[:150]}")
         return False
 
 
@@ -92,6 +120,7 @@ def init_state() -> None:
         "tag": "",
         "kontak": "",
         "pesan": [],
+        "debug_kirim": "Belum ada pengiriman.",
     }.items():
         if k not in st.session_state:
             st.session_state[k] = v
@@ -217,7 +246,7 @@ def halaman_room() -> None:
     with c_kanan:
         if st.button("Keluar", use_container_width=True, key="btn_keluar"):
             for k in ("masuk", "nama", "tag", "kontak", "pesan",
-                      "in_kontak_edit"):
+                      "in_kontak_edit", "debug_kirim"):
                 st.session_state.pop(k, None)
             st.rerun()
 
@@ -243,6 +272,12 @@ def halaman_room() -> None:
             st.toast("Kontak kamu tersimpan ✅")
             st.rerun()
 
+    # Panel debug: menampilkan jawaban mentah FormSubmit dari pengiriman
+    # pesan terakhir. Kalau pesan tidak kunjung sampai ke email admin,
+    # salin tulisan di sini dan laporkan ke developer.
+    with st.expander("🔍 Info teknis (kalau pesan nggak sampai, salin tulisan ini)"):
+        st.code(st.session_state.debug_kirim, language=None)
+
     teks = st.chat_input("Tulis pesan…")
     if teks and teks.strip():
         bersih = teks.strip()[:BATAS_PESAN]
@@ -260,8 +295,8 @@ def halaman_room() -> None:
         ):
             st.toast("Pesan terkirim ke admin Ampera Official ✅")
         else:
-            st.toast("Pesan tampil di sini, tapi gagal terkirim ke admin — "
-                     "coba kirim ulang ya ⚠️")
+            st.toast("Gagal kirim ⚠️ — buka 🔍 Info teknis di atas, salin "
+                     "tulisannya, lalu laporkan ya")
         st.rerun()
 
 
