@@ -34,7 +34,7 @@ st.set_page_config(
 # ---------------------------------------------------------------------------
 # PENGATURAN
 # ---------------------------------------------------------------------------
-EMAIL_ADMIN = "amperaofficialgroup@gmail.com"  # inbox tujuan semua pesan
+EMAIL_ADMIN = "saputraampera26@gmail.com"  # inbox tujuan semua pesan
 BATAS_PESAN = 2000                            # panjang maksimum 1 pesan
 _TIMEOUT = 15
 
