@@ -417,6 +417,100 @@ st.markdown(
       .jam { font-size:.64rem; color:#96969E; }
 
       [data-testid="stExpander"] { border:none !important; background:transparent !important; }
+
+      /* ==================================================================
+         OVERRIDE CHAT USER — paksa bubble USER ke kanan
+         ================================================================== */
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+         display: flex !important;
+         flex-direction: row !important;
+         align-self: flex-end !important;
+         float: none !important;
+         clear: none !important;
+
+         /* Lebih lebar + dorong penuh ke sisi kanan */
+         width: 88% !important;
+         max-width: 88% !important;
+         min-width: 0 !important;
+         margin-left: auto !important;
+         margin-right: 0 !important;
+
+         position: relative !important;
+         left: auto !important;
+         right: auto !important;
+         box-sizing: border-box !important;
+         overflow: hidden !important;
+
+         border-radius: 16px !important;
+         border-top-right-radius: 5px !important;
+         background: linear-gradient(135deg, #F0F1F3 0%, #D8DBE0 52%, #C9CDD2 100%) !important;
+         color: #202124 !important;
+         box-shadow: 0 5px 18px rgba(20,22,26,.15),
+                     inset 0 1px 0 rgba(255,255,255,.72) !important;
+         transform-origin: right bottom !important;
+         animation: bubbleInRight .42s cubic-bezier(.22,.78,.22,1) both !important;
+      }
+
+      /* Cahaya/glow halus yang bergerak di bubble user */
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])::after {
+         content: "" !important;
+         position: absolute !important;
+         top: -35% !important;
+         bottom: -35% !important;
+         left: -42% !important;
+         width: 28% !important;
+         pointer-events: none !important;
+         z-index: 0 !important;
+         background: linear-gradient(90deg, transparent, rgba(255,255,255,.52), transparent) !important;
+         filter: blur(9px) !important;
+         opacity: 0 !important;
+         transform: skewX(-14deg) translateX(0) !important;
+         animation: userBubbleGlow 6.5s cubic-bezier(.45,0,.55,1) infinite !important;
+      }
+
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])
+      [data-testid="stChatMessageContent"] {
+         position: relative !important;
+         z-index: 1 !important;
+      }
+
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])
+      [data-testid="stChatMessageAvatarUser"] {
+         order: 2 !important;
+         flex: 0 0 auto !important;
+         margin-left: 10px !important;
+         margin-right: 0 !important;
+      }
+
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])
+      [data-testid="stChatMessageContent"] {
+         order: 1 !important;
+         min-width: 0 !important;
+         text-align: left !important;
+      }
+
+      @keyframes bubbleInRight {
+         0% { opacity: 0; transform: translate3d(18px, 10px, 0) scale(.94); filter: blur(2px); }
+         65% { opacity: 1; transform: translate3d(-2px, -1px, 0) scale(1.005); filter: blur(0); }
+         100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+      }
+
+      @keyframes userBubbleGlow {
+         0%, 18% { transform: skewX(-14deg) translateX(0); opacity: 0; }
+         30% { opacity: .10; }
+         48% { opacity: .30; }
+         66% { opacity: .10; }
+         82%, 100% { transform: skewX(-14deg) translateX(520%); opacity: 0; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+         [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+            animation: none !important;
+         }
+         [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])::after {
+            animation: none !important;
+         }
+      }
     </style>
     """,
     unsafe_allow_html=True,
