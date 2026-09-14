@@ -206,65 +206,96 @@ st.markdown(
          box-shadow: 0 8px 26px rgba(25,27,32,0.12), inset 0 1px 0 rgba(255,255,255,0.55) !important;
       }
 
-      /* ---------- Chat bubble gaya WhatsApp ---------- */
+            /* ---------- Chat bubble gaya WhatsApp ---------- */
+
       [data-testid="stChatMessage"] {
-         position: relative !important; padding: .65rem .9rem !important;
-         max-width: 88% !important; width: fit-content !important; min-width: 120px !important;
-         margin-top: .28rem !important; margin-bottom: .28rem !important;
-         border: none !important; border-radius: 16px !important;
-         box-shadow: 0 4px 14px rgba(20,22,26,.14) !important;
-         backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
-         animation: bubbleIn .42s cubic-bezier(.22,.8,.24,1) both;
+         position: relative !important;
+         padding: .55rem .78rem !important;
+
+         max-width: 86% !important;
+         width: max-content !important;
+         min-width: 120px !important;
+
+         margin-top: .24rem !important;
+         margin-bottom: .24rem !important;
+
+         border: none !important;
+         border-radius: 14px !important;
+
+         box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
+
+         backdrop-filter: blur(10px) !important;
+         -webkit-backdrop-filter: blur(10px) !important;
+
+         transform-origin: left bottom;
+         animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
       }
 
-      /* ADMIN → kiri */
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-         align-self: flex-start !important;
-         margin-left: 0 !important; margin-right: auto !important;
-         float: none !important; clear: both !important;
-         background: linear-gradient(135deg, #AEB3B9, #92979E) !important;
+
+      /* ---------- BUBBLE ADMIN → KIRI ---------- */
+
+      [data-testid="stChatMessage"]:has(
+         [data-testid="stChatMessageAvatarAssistant"]
+      ) {
+         margin-right: auto !important;
+         margin-left: 0 !important;
+
+         background: linear-gradient(
+            135deg,
+            #AEB3B9,
+            #92979E
+         ) !important;
+
          color: #FFFFFF !important;
+
          border-top-left-radius: 5px !important;
+
          transform-origin: left bottom;
       }
 
-      /* USER → kanan */
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         align-self: flex-end !important;
-         margin-left: auto !important; margin-right: 0 !important;
-         float: none !important; clear: both !important;
-         display: flex !important; flex-direction: row !important;
-         width: fit-content !important; max-width: 88% !important;
-         background: linear-gradient(135deg, #F0F1F3, #D5D8DC) !important;
+
+      /* ---------- BUBBLE USER → KANAN ---------- */
+
+      [data-testid="stChatMessage"]:has(
+         [data-testid="stChatMessageAvatarUser"]
+      ) {
+         margin-left: auto !important;
+         margin-right: 0 !important;
+
+         flex-direction: row-reverse !important;
+
+         background: linear-gradient(
+            135deg,
+            #E5E7EA,
+            #D2D5D9
+         ) !important;
+
          color: #202124 !important;
+
          border-top-right-radius: 5px !important;
+
          transform-origin: right bottom;
-         box-shadow: 0 5px 18px rgba(20,22,26,.16), 0 0 0 rgba(255,255,255,0) !important;
       }
 
-      /* Pastikan wrapper chat memberi ruang penuh kiri-kanan */
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         left: auto !important; right: auto !important;
+
+      /* Avatar USER tetap berada di sisi kanan */
+
+      [data-testid="stChatMessage"]:has(
+         [data-testid="stChatMessageAvatarUser"]
+      ) [data-testid="stChatMessageAvatarUser"] {
+         margin-left: 8px !important;
+         margin-right: 0 !important;
       }
 
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageAvatarUser"] {
-         order: 2 !important; margin-left: 10px !important; margin-right: 0 !important;
-      }
 
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageContent"] {
-         order: 1 !important; text-align: left !important;
-      }
+      /* Isi teks bubble tetap rata kiri */
 
-      /* Glow user yang lembut dan mengalir */
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])::after {
-         content: ""; position: absolute; inset: -1px; z-index: -1;
-         border-radius: inherit; pointer-events: none;
-         background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.72) 48%, transparent 72%);
-         background-size: 220% 100%;
-         opacity: .38; filter: blur(7px);
-         animation: userGlow 4.8s cubic-bezier(.45,0,.55,1) infinite;
+      [data-testid="stChatMessage"]:has(
+         [data-testid="stChatMessageAvatarUser"]
+      ) [data-testid="stChatMessageContent"] {
+         text-align: left !important;
       }
-
+      
       @keyframes userGlow {
          0%, 18% { background-position: 130% 50%; opacity: 0; }
          38% { opacity: .22; }
