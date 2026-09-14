@@ -209,9 +209,11 @@ st.markdown(
       /* ---------- Chat bubble gaya WhatsApp ---------- */
       [data-testid="stChatMessage"] {
          position: relative !important; padding: .55rem .78rem !important;
-         max-width: 78% !important; width: fit-content !important; min-width: 80px !important;
+         max-width: 86% !important; width: max-content !important; min-width: 120px !important;
          margin-top: .24rem !important; margin-bottom: .24rem !important;
          align-self: flex-start !important;
+         float: left !important;
+         clear: both !important;
          border: none !important; border-radius: 14px !important;
          box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
          backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
@@ -219,12 +221,12 @@ st.markdown(
          animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-         align-self: flex-start !important; margin-right: auto !important; margin-left: 0 !important;
+         align-self: flex-start !important; float: left !important; clear: both !important; margin-right: auto !important; margin-left: 0 !important;
          background: linear-gradient(135deg, #AEB3B9, #92979E) !important; color: #FFFFFF !important;
          border-top-left-radius: 5px !important; transform-origin: left bottom;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         align-self: flex-end !important; margin-left: auto !important; margin-right: 0 !important;
+         align-self: flex-end !important; float: right !important; clear: both !important; margin-left: auto !important; margin-right: 0 !important;
          display:flex !important; flex-direction:row !important;
          background: linear-gradient(135deg, #E5E7EA, #D2D5D9) !important; color: #202124 !important;
          border-top-right-radius: 5px !important; transform-origin: right bottom;
@@ -235,6 +237,20 @@ st.markdown(
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageContent"] {
          order:1 !important; text-align:left !important;
       }
+      /* Paksa baris chat menjadi area penuh agar bubble USER benar-benar kanan. */
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+         position: relative !important;
+         left: auto !important;
+         right: auto !important;
+         margin-left: auto !important;
+         margin-right: 0 !important;
+      }
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+         position: relative !important;
+         left: auto !important;
+         right: auto !important;
+      }
+
       @keyframes bubbleIn {
          0% { opacity:0; transform:translateY(10px) scale(.92); filter:blur(2px); }
          70% { opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); }
