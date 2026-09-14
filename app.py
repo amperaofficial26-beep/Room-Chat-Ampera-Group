@@ -167,15 +167,21 @@ st.markdown(
         box-shadow:0 10px 30px rgba(25,27,32,.16), inset 0 1px 0 rgba(255,255,255,.65);
         backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
       .logo-wrap::before {
-        content:""; position:absolute; inset:-45%;
-        background:conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,.75) 55deg, transparent 105deg, transparent 220deg, rgba(255,255,255,.45) 285deg, transparent 330deg);
-        animation:putarGlow 6s linear infinite; pointer-events:none;
+        content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
+        background:linear-gradient(105deg, transparent 0%, transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,.92) 50%, rgba(255,255,255,0) 58%, transparent 62%, transparent 100%);
+        background-size:220% 100%; background-position:140% 0;
+        mix-blend-mode:screen; opacity:.72;
+        animation:glowBerjalan 3.8s ease-in-out infinite;
       }
       .logo-wrap img { position:relative; z-index:2; width:100%; height:100%;
         object-fit:cover; display:block; border-radius:22px;
         box-shadow:0 5px 18px rgba(20,22,26,.18); }
       .logo-fallback { font-family:Georgia,serif; font-size:2.2rem; font-weight:700; color:#2B2B31; }
-      @keyframes putarGlow { to { transform:rotate(360deg); } }
+      @keyframes glowBerjalan {
+        0%, 15% { background-position:140% 0; opacity:.15; }
+        50% { background-position:0% 0; opacity:.78; }
+        85%, 100% { background-position:-140% 0; opacity:.15; }
+      }
 
       /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
       .room-head { text-align:center; padding:.3rem 0 .5rem; transform:translateX(55px); }
@@ -215,9 +221,16 @@ st.markdown(
          border-top-left-radius: 5px !important; transform-origin: left bottom;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         margin-left: auto !important; margin-right: 0 !important; flex-direction: row-reverse !important;
+         margin-left: auto !important; margin-right: 0 !important;
+         display:flex !important; flex-direction:row !important;
          background: linear-gradient(135deg, #E5E7EA, #D2D5D9) !important; color: #202124 !important;
          border-top-right-radius: 5px !important; transform-origin: right bottom;
+      }
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageAvatarUser"] {
+         order:2 !important; margin-left:8px !important; margin-right:0 !important;
+      }
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageContent"] {
+         order:1 !important; text-align:left !important;
       }
       @keyframes bubbleIn {
          0% { opacity:0; transform:translateY(10px) scale(.92); filter:blur(2px); }
