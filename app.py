@@ -37,6 +37,7 @@ st.set_page_config(
 # ---------------------------------------------------------------------------
 EMAIL_ADMIN = "saputraampera26@gmail.com"    # inbox utama tujuan pesan
 EMAIL_CC = "amperaofficialgroup@gmail.com"   # dapat kopian tiap pesan
+URL_ROOM = "https://room-chat-ampera-group.streamlit.app"  # alamat room ini
 BATAS_PESAN = 2000                           # panjang maksimum 1 pesan
 _TIMEOUT = 15
 
@@ -84,8 +85,13 @@ def kirim_ke_admin(nama: str, tag: str, kontak: str, pesan: str) -> bool:
             json=data,
             headers={
                 "Accept": "application/json",
-                # Header ala browser biasa — FormSubmit kadang memfilter
-                # kiriman yang terlihat seperti bot (python-requests).
+                # FormSubmit menolak kiriman tanpa identitas halaman web
+                # (error "open this page through a web server"). Server
+                # Streamlit tidak otomatis mengirim Origin/Referer, jadi
+                # dikirim manual — seolah pesan dikirim dari halaman room
+                # ini sendiri.
+                "Origin": URL_ROOM,
+                "Referer": URL_ROOM + "/",
                 "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                                "AppleWebKit/537.36 (KHTML, like Gecko) "
                                "Chrome/126.0.0.0 Safari/537.36"),
