@@ -41,6 +41,10 @@ URL_ROOM = "https://room-chat-ampera-group.streamlit.app"  # alamat room ini
 BATAS_PESAN = 2000                           # panjang maksimum 1 pesan
 _TIMEOUT = 15
 
+# Ganti dengan link logo AOG kamu (upload logo.png ke repo ini, lalu isi
+# link "raw" GitHub-nya di sini — atau link gambar dari mana saja).
+LOGO_URL = "logo.png"
+
 
 def jam_wib() -> str:
     return datetime.now(WIB).strftime("%d %b %H:%M")
@@ -126,86 +130,158 @@ def init_state() -> None:
 st.markdown(
     """
     <style>
-      /* ---------- Latar: gradient warna-warni ala iOS di belakang kaca ---------- */
+      /* ---------- Latar: silver & putih, mengalir pelan ---------- */
       .appview-container, .stApp {
-        background:
-          radial-gradient(900px 600px at 12% 8%,  #7C9CFF66 0%, transparent 60%),
-          radial-gradient(900px 650px at 88% 15%, #FF9BD266 0%, transparent 60%),
-          radial-gradient(950px 700px at 25% 92%, #7CF0D066 0%, transparent 60%),
-          radial-gradient(900px 650px at 90% 88%, #FFD27C66 0%, transparent 60%),
-          linear-gradient(160deg, #EDEFFB 0%, #F4EEFB 45%, #EAF6F3 100%) !important;
+        background: linear-gradient(120deg,
+          #F6F6F8 0%, #E9EAEE 22%, #FFFFFF 45%,
+          #DCDDE3 68%, #F1F1F4 86%, #F6F6F8 100%) !important;
+        background-size: 400% 400% !important;
+        animation: aliranSilver 22s ease-in-out infinite !important;
         background-attachment: fixed !important;
       }
+      @keyframes aliranSilver {
+        0%   { background-position: 0% 50%; }
+        50%  { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
 
-      /* ---------- Header ---------- */
-      .room-head { text-align:center; padding:1.2rem 0 .5rem; }
-      .room-head .judul { font-family:-apple-system,"SF Pro Display",Segoe UI,sans-serif;
-        font-weight:700; font-size:1.85rem; letter-spacing:.01em; margin:0;
-        background:linear-gradient(93deg,#4A5AE8 10%,#B355D8 50%,#E8608F 92%);
-        -webkit-background-clip:text; background-clip:text; color:transparent; }
-      .room-head .sub { font-size:.72rem; letter-spacing:.28em; color:#6E7280;
-        margin-top:6px; font-weight:600; }
+      /* ---------- Logo + glow berjalan ---------- */
+      .logo-wrap { position:relative; width:96px; height:96px; margin:.2rem auto .3rem;
+        display:flex; align-items:center; justify-content:center; }
+      .logo-wrap::before {
+        content:""; position:absolute; inset:-7px; border-radius:50%;
+        background: conic-gradient(from 0deg,
+          transparent 0deg, #FFFFFF 35deg, #C9CAD1 70deg, transparent 110deg,
+          transparent 250deg, #D8D9DE 300deg, #FFFFFF 330deg, transparent 360deg);
+        filter: blur(7px);
+        animation: putarGlow 5s linear infinite;
+      }
+      .logo-wrap::after {
+        content:""; position:absolute; inset:-2px; border-radius:50%;
+        background: rgba(255,255,255,0.55);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.8);
+      }
+      .logo-wrap img { position:relative; z-index:2; width:76px; height:76px;
+        border-radius:50%; object-fit:cover;
+        box-shadow: 0 4px 16px rgba(30,30,40,0.18); background:#fff; }
+      @keyframes putarGlow { to { transform: rotate(360deg); } }
 
-      /* ---------- Kartu kaca dasar: dipakai container, chat bubble, expander ---------- */
+      /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
+      .room-head { text-align:center; padding:.3rem 0 .5rem; }
+      .room-head .judul { font-family:Georgia,"Times New Roman",serif;
+        font-weight:600; font-size:1.55rem; letter-spacing:.16em; margin:0;
+        text-transform:uppercase; color:#2B2B31; }
+      .room-head .sub { font-size:.68rem; letter-spacing:.32em; color:#8A8A93;
+        margin-top:7px; font-weight:600; }
+      .room-head .garis { width:38px; height:1px; margin:.55rem auto 0;
+        background:linear-gradient(90deg,transparent,#B9B9C2,transparent); }
+
+      /* ---------- Kartu kaca dasar ---------- */
       [data-testid="stVerticalBlockBorderWrapper"],
       [data-testid="stChatMessage"],
       [data-testid="stExpander"] details,
       [data-testid="stChatInput"] {
-        background: rgba(255,255,255,0.38) !important;
-        backdrop-filter: blur(22px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
-        border: 1px solid rgba(255,255,255,0.55) !important;
+        background: rgba(255,255,255,0.42) !important;
+        backdrop-filter: blur(22px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
+        border: 1px solid rgba(255,255,255,0.6) !important;
         border-radius: 22px !important;
-        box-shadow: 0 8px 28px rgba(80,60,140,0.12),
-                    inset 0 1px 0 rgba(255,255,255,0.6) !important;
+        box-shadow: 0 8px 26px rgba(40,40,55,0.10),
+                    inset 0 1px 0 rgba(255,255,255,0.65) !important;
       }
-      [data-testid="stChatMessage"] { padding:.7rem 1rem !important; }
+      [data-testid="stChatMessage"] { padding:.65rem .95rem !important; max-width:82%; }
+
+      /* ---------- Rapikan gelembung chat: admin kiri, user kanan ---------- */
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+        margin-left: auto !important;
+        flex-direction: row-reverse !important;
+        background: rgba(91,110,245,0.10) !important;
+      }
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+        margin-right: auto !important;
+      }
+      [data-testid="stChatMessageContent"] p { margin-bottom:.15rem !important; }
 
       /* ---------- Input teks: pil kaca ---------- */
       .stTextInput input, [data-testid="stChatInput"] textarea {
         background: rgba(255,255,255,0.55) !important;
-        backdrop-filter: blur(14px) saturate(160%) !important;
-        -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
-        border: 1px solid rgba(255,255,255,0.7) !important;
+        backdrop-filter: blur(14px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(14px) saturate(150%) !important;
+        border: 1px solid rgba(255,255,255,0.75) !important;
         border-radius: 999px !important;
-        color:#2E2A3D !important;
+        color:#2B2B31 !important;
       }
       [data-testid="stChatInput"] { border-radius: 26px !important; padding:.2rem .4rem !important; }
       [data-testid="stChatInput"] textarea { border-radius: 20px !important; }
 
-      /* ---------- Tombol: pil kaca dengan aksen gradient ---------- */
+      /* Hilangkan latar putih bawaan di area kotak chat input */
+      [data-testid="stBottomBlockContainer"],
+      [data-testid="stBottom"] > div,
+      .stChatFloatingInputContainer,
+      [data-testid="stChatInputContainer"] {
+        background: transparent !important;
+        box-shadow: none !important;
+        border-top: none !important;
+      }
+      [data-testid="stBottomBlockContainer"]::before,
+      [data-testid="stBottom"]::before {
+        background: transparent !important;
+      }
+
+      /* ---------- Tombol: pil kaca dengan aksen silver ---------- */
       .stButton button {
         border-radius: 999px !important;
-        border: 1px solid rgba(255,255,255,0.6) !important;
-        backdrop-filter: blur(14px) saturate(160%) !important;
-        -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+        border: 1px solid rgba(255,255,255,0.7) !important;
+        backdrop-filter: blur(14px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(14px) saturate(150%) !important;
         font-weight:600 !important;
         transition: transform .15s ease, box-shadow .15s ease;
       }
       .stButton button:hover { transform: translateY(-1px); }
       .stButton button[kind="primary"] {
-        background: linear-gradient(93deg,#5B6EF5 0%,#B355D8 55%,#E8608F 100%) !important;
+        background: linear-gradient(93deg,#3A3A3F 0%,#6E6E76 50%,#3A3A3F 100%) !important;
         color:#fff !important; border:none !important;
-        box-shadow: 0 6px 18px rgba(120,80,220,0.35) !important;
+        box-shadow: 0 6px 18px rgba(30,30,40,0.28) !important;
       }
       .stButton button[kind="secondary"] {
-        background: rgba(255,255,255,0.45) !important; color:#3A3550 !important;
+        background: rgba(255,255,255,0.5) !important; color:#3A3A40 !important;
+      }
+
+      /* ---------- Panel kontak kecil (kiri) ---------- */
+      .panel-kontak [data-testid="stExpander"] details { border-radius:18px !important; }
+      .panel-kontak summary { font-size:.78rem !important; }
+
+      /* ---------- Tombol Keluar mengambang di pojok kanan bawah ---------- */
+      div[data-testid="stElementContainer"]:has(.anchor-keluar)
+        + div[data-testid="stElementContainer"] div[data-testid="stButton"] {
+        position: fixed; right: 20px; bottom: 88px; z-index: 999;
+      }
+      div[data-testid="stElementContainer"]:has(.anchor-keluar)
+        + div[data-testid="stElementContainer"] div[data-testid="stButton"] button {
+        border-radius: 999px !important; padding:.4rem 1.1rem !important;
+        background: rgba(255,255,255,0.55) !important; color:#5A3030 !important;
+        border:1px solid rgba(255,255,255,0.8) !important;
+        box-shadow: 0 6px 18px rgba(40,40,55,0.16) !important;
       }
 
       /* ---------- Elemen kecil ---------- */
-      .admin-badge { display:inline-block; font-size:.66rem; font-weight:700;
-        color:#5B3FA0; background:rgba(179,85,216,0.16);
-        border:1px solid rgba(179,85,216,0.35);
+      .admin-badge { display:inline-block; font-size:.64rem; font-weight:700;
+        color:#3A3A40; background:rgba(200,200,210,0.35);
+        border:1px solid rgba(180,180,192,0.5);
         border-radius:999px; padding:1px 9px; margin-left:6px;
         backdrop-filter: blur(6px); }
-      .jam { font-size:.66rem; color:#8A8496; }
+      .jam { font-size:.64rem; color:#96969E; }
 
-      /* ---------- Sembunyikan chrome default agar kaca lebih menonjol ---------- */
       [data-testid="stExpander"] { border:none !important; background:transparent !important; }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
+
+def _logo_html() -> str:
+    return f'<div class="logo-wrap"><img src="{LOGO_URL}" onerror="this.parentElement.innerHTML=\'🔱\';this.parentElement.style.fontSize=\'2.4rem\';" /></div>'
 
 
 def _sapaan_pembuka(nama: str) -> str:
@@ -232,20 +308,29 @@ def _bubble(m: dict) -> None:
 
 
 def halaman_masuk() -> None:
+    st.markdown(_logo_html(), unsafe_allow_html=True)
     st.markdown(
-        '<div class="room-head"><h1 class="judul">🔱 Ampera Official Group</h1>'
-        '<div class="sub">ROOM CHAT RESMI AMPERA OFFICIAL</div></div>',
+        '<div class="room-head"><h1 class="judul">Ampera Official Group</h1>'
+        '<div class="sub">ROOM CHAT RESMI</div>'
+        '<div class="garis"></div></div>',
         unsafe_allow_html=True,
     )
     st.markdown(
-        '<div style="text-align:center;color:#6F6154;font-size:.9rem;'
-        'margin:1rem 0 1.4rem;">Mau tanya-tanya atau berlangganan produk '
-        "Ampera Official? Masuk dengan nama panggilanmu — tanpa daftar, "
-        "tanpa akun. Setiap pesanmu langsung sampai ke admin.</div>",
+        '<div style="text-align:center;color:#6E6E76;font-size:.86rem;'
+        'margin:.9rem 0 1.3rem;line-height:1.5;">Mau tanya-tanya atau '
+        "berlangganan produk Ampera Official? Masuk dengan nama "
+        "panggilanmu — tanpa daftar, tanpa akun. Setiap pesanmu langsung "
+        "sampai ke admin.</div>",
         unsafe_allow_html=True,
     )
 
     with st.container(border=True):
+        st.markdown(
+            '<div style="text-align:center;font-size:.72rem;'
+            'letter-spacing:.18em;color:#9A9AA2;font-weight:600;'
+            'margin-bottom:.6rem;">MASUK KE ROOM</div>',
+            unsafe_allow_html=True,
+        )
         nama = st.text_input(
             "Nama panggilan kamu",
             max_chars=20,
@@ -281,50 +366,59 @@ def halaman_masuk() -> None:
 
 
 def halaman_room() -> None:
+    st.markdown(_logo_html(), unsafe_allow_html=True)
     st.markdown(
-        '<div class="room-head"><h1 class="judul">🔱 Ampera Official Group</h1>'
-        '<div class="sub">ROOM CHAT RESMI AMPERA OFFICIAL</div></div>',
+        '<div class="room-head"><h1 class="judul">Ampera Official Group</h1>'
+        '<div class="sub">ROOM CHAT RESMI</div>'
+        '<div class="garis"></div></div>',
         unsafe_allow_html=True,
     )
-    c_kiri, c_kanan = st.columns([3, 1])
-    with c_kiri:
-        identitas = f"<b>{html.escape(st.session_state.nama)}</b>"
-        if st.session_state.tag:
-            identitas += (f' <span style="color:#B3A28C">'
-                          f'#{st.session_state.tag}</span>')
-        st.markdown(
-            f'<div style="font-size:.85rem;color:#6F6154;">Masuk sebagai: '
-            f"{identitas}</div>",
-            unsafe_allow_html=True,
-        )
-    with c_kanan:
-        if st.button("Keluar", use_container_width=True, key="btn_keluar"):
-            for k in ("masuk", "nama", "tag", "kontak", "pesan",
-                      "in_kontak_edit"):
-                st.session_state.pop(k, None)
-            st.rerun()
 
+    identitas = f"<b>{html.escape(st.session_state.nama)}</b>"
+    if st.session_state.tag:
+        identitas += (f' <span style="color:#A6A6AF">'
+                      f'#{st.session_state.tag}</span>')
+    st.markdown(
+        f'<div style="text-align:center;font-size:.8rem;color:#7A7A82;'
+        f'margin-bottom:.4rem;">Masuk sebagai: {identitas}</div>',
+        unsafe_allow_html=True,
+    )
     st.caption("⚡ Setiap pesanmu langsung terkirim ke admin Ampera Official.")
+
+    # Panel kontak kecil di sisi kiri — bisa diisi / diganti kapan saja,
+    # ikut terkirim di pesan berikutnya, jadi admin tahu harus membalas
+    # ke mana.
+    col_kontak, _ = st.columns([1, 2])
+    with col_kontak:
+        st.markdown('<div class="panel-kontak">', unsafe_allow_html=True)
+        with st.expander("✏️ Kontak", expanded=False):
+            st.caption(
+                f"Saat ini: {st.session_state.kontak or 'belum diisi'}"
+            )
+            baru = st.text_input(
+                "Email / No. HP kamu",
+                value=st.session_state.kontak,
+                max_chars=60,
+                key="in_kontak_edit",
+            )
+            if st.button("Simpan", key="btn_simpan_kontak"):
+                st.session_state.kontak = " ".join((baru or "").split())
+                st.session_state.pop("in_kontak_edit", None)
+                st.toast("Kontak kamu tersimpan ✅")
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
     for m in st.session_state.pesan:
         _bubble(m)
 
-    # Kontak bisa diisi / diganti kapan saja — ikut terkirim di pesan
-    # berikutnya, jadi admin tahu harus membalas ke mana.
-    with st.expander(
-        f"✏️ Kontak balas: {st.session_state.kontak or 'belum diisi'}"
-    ):
-        baru = st.text_input(
-            "Email / No. HP kamu",
-            value=st.session_state.kontak,
-            max_chars=60,
-            key="in_kontak_edit",
-        )
-        if st.button("Simpan kontak", key="btn_simpan_kontak"):
-            st.session_state.kontak = " ".join((baru or "").split())
-            st.session_state.pop("in_kontak_edit", None)
-            st.toast("Kontak kamu tersimpan ✅")
-            st.rerun()
+    # Tombol Keluar — mengambang di pojok kanan bawah (lihat CSS
+    # ".anchor-keluar" di atas untuk cara kerjanya).
+    st.markdown('<span class="anchor-keluar"></span>', unsafe_allow_html=True)
+    if st.button("🚪 Keluar", key="btn_keluar"):
+        for k in ("masuk", "nama", "tag", "kontak", "pesan",
+                  "in_kontak_edit"):
+            st.session_state.pop(k, None)
+        st.rerun()
 
     teks = st.chat_input("Tulis pesan…")
     if teks and teks.strip():
