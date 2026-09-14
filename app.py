@@ -1,0 +1,276 @@
+# -*- coding: utf-8 -*-
+"""
+Ampera Official Group — room chat resmi Ampera Official.
+
+App Streamlit terpisah (repo sendiri: ampera-official-group).
+TANPA database, TANPA Supabase, TANPA secrets: setiap pesan yang dikirim
+user langsung diteruskan ke inbox email admin (amperaofficialgroup@gmail.com)
+lewat FormSubmit (formsubmit.co) — layanan form-to-email gratis tanpa API key.
+
+PENTING (sekali saja, waktu pertama dipakai): kirim satu pesan tes dari
+room ini, lalu buka Gmail amperaofficialgroup@gmail.com dan klik link
+AKTIVASI dari FormSubmit. Setelah diklik, semua pesan masuk terus ke inbox.
+"""
+
+from __future__ import annotations
+
+import html
+import random
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+import requests
+import streamlit as st
+
+WIB = ZoneInfo("Asia/Jakarta")
+
+st.set_page_config(
+    page_title="Room Chat Ampera Official",
+    page_icon="🔱",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+)
+
+# ---------------------------------------------------------------------------
+# PENGATURAN
+# ---------------------------------------------------------------------------
+EMAIL_ADMIN = "amperaofficialgroup@gmail.com"  # inbox tujuan semua pesan
+BATAS_PESAN = 2000                            # panjang maksimum 1 pesan
+_TIMEOUT = 15
+
+
+def jam_wib() -> str:
+    return datetime.now(WIB).strftime("%d %b %H:%M")
+
+
+def _mirip_email(teks: str) -> bool:
+    """True kalau teksnya berbentuk alamat email (ada @ lalu titik)."""
+    t = (teks or "").strip()
+    if " " in t or "@" not in t:
+        return False
+    setelah = t.split("@", 1)[1]
+    return "." in setelah and len(setelah) > 2
+
+
+# ---------------------------------------------------------------------------
+# KIRIM PESAN KE EMAIL ADMIN (FormSubmit — gratis, tanpa API key)
+# ---------------------------------------------------------------------------
+def kirim_ke_admin(nama: str, tag: str, kontak: str, pesan: str) -> bool:
+    """Teruskan pesan user ke inbox admin. True kalau berhasil."""
+    data = {
+        "name": f"{nama} #{tag}",
+        "Pesan": pesan,
+        "Kontak": kontak or "(tidak diisi)",
+        "Waktu (WIB)": jam_wib(),
+        "_subject": f"💬 {nama} #{tag}: {pesan[:40]}",
+        "_template": "table",
+        "_captcha": "false",
+    }
+    # Kalau user mengisi email, jadikan Reply-To: di Gmail kamu tinggal tekan
+    # tombol "Balas" dan jawabannya langsung menuju email user tersebut.
+    if _mirip_email(kontak):
+        data["email"] = kontak
+    try:
+        r = requests.post(
+            f"https://formsubmit.co/ajax/{EMAIL_ADMIN}",
+            json=data,
+            headers={"Accept": "application/json"},
+            timeout=_TIMEOUT,
+        )
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
+# ---------------------------------------------------------------------------
+# STATE SEDERHANA
+# ---------------------------------------------------------------------------
+def init_state() -> None:
+    for k, v in {
+        "masuk": False,
+        "nama": "",
+        "tag": "",
+        "kontak": "",
+        "pesan": [],
+    }.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
+
+
+# ---------------------------------------------------------------------------
+# TAMPILAN
+# ---------------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+      .appview-container, .stApp { background:
+        radial-gradient(1100px 700px at 50% 20%, #FFFFFF 0%, #F7F1E3 48%, #E8DCC8 100%)
+        !important; }
+      .room-head { text-align:center; padding:1.1rem 0 .4rem; }
+      .room-head .judul { font-family:Georgia,serif; font-weight:700;
+        font-size:1.9rem; letter-spacing:.08em; margin:0;
+        background:linear-gradient(93deg,#5C4632 10%,#A5814F 55%,#5C4632 92%);
+        -webkit-background-clip:text; background-clip:text; color:transparent; }
+      .room-head .sub { font-size:.78rem; letter-spacing:.3em; color:#8A7960;
+        margin-top:4px; }
+      [data-testid="stChatMessage"] { border-radius:16px;
+        background:#FFFDF8; border:1px solid #E3D5BC; padding:.6rem .9rem; }
+      .admin-badge { display:inline-block; font-size:.68rem; font-weight:700;
+        color:#7A5C2E; background:#F3E3C0; border:1px solid #D9BE8A;
+        border-radius:999px; padding:1px 9px; margin-left:6px; }
+      .jam { font-size:.68rem; color:#9C8C77; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+def _sapaan_pembuka(nama: str) -> str:
+    return (
+        f"Hai {nama}! 👋 Selamat datang di Room Chat Ampera Official. "
+        "Tulis pesanmu di kotak paling bawah — mau tanya-tanya produk, "
+        "harga, atau langganan, semuanya langsung terkirim ke admin "
+        "Ampera Official. Pesanmu di room ini cuma dilihat oleh kamu dan "
+        "admin 😉"
+    )
+
+
+def _bubble(m: dict) -> None:
+    resmi = bool(m.get("resmi"))
+    label = f"**{html.escape(str(m.get('pengirim', 'Seseorang')))}**" + (
+        '<span class="admin-badge">👑 RESMI</span>' if resmi else "")
+    with st.chat_message("assistant" if resmi else "user",
+                         avatar="🔱" if resmi else None):
+        st.markdown(
+            f"{label}  \n{html.escape(str(m.get('teks', '')))}  \n"
+            f'<span class="jam">{html.escape(str(m.get("jam", "")))}</span>',
+            unsafe_allow_html=True,
+        )
+
+
+def halaman_masuk() -> None:
+    st.markdown(
+        '<div class="room-head"><h1 class="judul">🔱 Ampera Official Group</h1>'
+        '<div class="sub">ROOM CHAT RESMI AMPERA OFFICIAL</div></div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="text-align:center;color:#6F6154;font-size:.9rem;'
+        'margin:1rem 0 1.4rem;">Mau tanya-tanya atau berlangganan produk '
+        "Ampera Official? Masuk dengan nama panggilanmu — tanpa daftar, "
+        "tanpa akun. Setiap pesanmu langsung sampai ke admin.</div>",
+        unsafe_allow_html=True,
+    )
+
+    with st.container(border=True):
+        nama = st.text_input(
+            "Nama panggilan kamu",
+            max_chars=20,
+            placeholder="misal: Budi",
+            key="in_nama",
+        )
+        kontak = st.text_input(
+            "Email / No. HP kamu (opsional)",
+            max_chars=60,
+            placeholder="biar admin bisa membalas kamu",
+            key="in_kontak",
+        )
+        if st.button("Masuk Room", use_container_width=True, type="primary",
+                     key="btn_masuk"):
+            nama_bersih = " ".join((nama or "").split())
+            if not nama_bersih:
+                st.warning("Isi dulu nama panggilanmu ya.")
+            elif ("ampera" in nama_bersih.lower()
+                  and "official" in nama_bersih.lower()):
+                st.error("Nama itu khusus admin resmi. Pilih nama lain ya.")
+            else:
+                st.session_state.masuk = True
+                st.session_state.nama = nama_bersih
+                st.session_state.tag = str(random.randint(100, 999))
+                st.session_state.kontak = " ".join((kontak or "").split())
+                st.session_state.pesan = [{
+                    "pengirim": "Ampera Official",
+                    "resmi": True,
+                    "teks": _sapaan_pembuka(nama_bersih),
+                    "jam": jam_wib(),
+                }]
+                st.rerun()
+
+
+def halaman_room() -> None:
+    st.markdown(
+        '<div class="room-head"><h1 class="judul">🔱 Ampera Official Group</h1>'
+        '<div class="sub">ROOM CHAT RESMI AMPERA OFFICIAL</div></div>',
+        unsafe_allow_html=True,
+    )
+    c_kiri, c_kanan = st.columns([3, 1])
+    with c_kiri:
+        identitas = f"<b>{html.escape(st.session_state.nama)}</b>"
+        if st.session_state.tag:
+            identitas += (f' <span style="color:#B3A28C">'
+                          f'#{st.session_state.tag}</span>')
+        st.markdown(
+            f'<div style="font-size:.85rem;color:#6F6154;">Masuk sebagai: '
+            f"{identitas}</div>",
+            unsafe_allow_html=True,
+        )
+    with c_kanan:
+        if st.button("Keluar", use_container_width=True, key="btn_keluar"):
+            for k in ("masuk", "nama", "tag", "kontak", "pesan",
+                      "in_kontak_edit"):
+                st.session_state.pop(k, None)
+            st.rerun()
+
+    st.caption("⚡ Setiap pesanmu langsung terkirim ke admin Ampera Official.")
+
+    for m in st.session_state.pesan:
+        _bubble(m)
+
+    # Kontak bisa diisi / diganti kapan saja — ikut terkirim di pesan
+    # berikutnya, jadi admin tahu harus membalas ke mana.
+    with st.expander(
+        f"✏️ Kontak balas: {st.session_state.kontak or 'belum diisi'}"
+    ):
+        baru = st.text_input(
+            "Email / No. HP kamu",
+            value=st.session_state.kontak,
+            max_chars=60,
+            key="in_kontak_edit",
+        )
+        if st.button("Simpan kontak", key="btn_simpan_kontak"):
+            st.session_state.kontak = " ".join((baru or "").split())
+            st.session_state.pop("in_kontak_edit", None)
+            st.toast("Kontak kamu tersimpan ✅")
+            st.rerun()
+
+    teks = st.chat_input("Tulis pesan…")
+    if teks and teks.strip():
+        bersih = teks.strip()[:BATAS_PESAN]
+        st.session_state.pesan.append({
+            "pengirim": st.session_state.nama,
+            "resmi": False,
+            "teks": bersih,
+            "jam": jam_wib(),
+        })
+        if kirim_ke_admin(
+            st.session_state.nama,
+            st.session_state.tag,
+            st.session_state.kontak,
+            bersih,
+        ):
+            st.toast("Pesan terkirim ke admin Ampera Official ✅")
+        else:
+            st.toast("Pesan tampil di sini, tapi gagal terkirim ke admin — "
+                     "coba kirim ulang ya ⚠️")
+        st.rerun()
+
+
+# ---------------------------------------------------------------------------
+# JALAN UTAMA
+# ---------------------------------------------------------------------------
+init_state()
+
+if st.session_state.masuk:
+    halaman_room()
+else:
+    halaman_masuk()
