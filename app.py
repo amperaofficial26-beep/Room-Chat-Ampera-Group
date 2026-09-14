@@ -230,39 +230,55 @@ st.markdown(
          box-shadow: 0 7px 24px rgba(25,27,32,.18) !important;
       }
       /* ---------- Kolom chat panjang berbentuk pil ---------- */
+      /* ---------- Chat input: tanpa background/container tambahan ---------- */
       [data-testid="stChatInput"] {
         background: transparent !important;
-        border-radius: 999px !important;
-        padding: 0 !important;
         border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+      }
+
+      [data-testid="stChatInput"] > div {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 10px !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
       }
 
       [data-testid="stChatInput"] textarea {
         min-height: 48px !important;
         height: 48px !important;
-        background: rgba(255,255,255,0.96) !important;
+        flex: 1 1 auto !important;
+        background: rgba(255,255,255,0.98) !important;
         backdrop-filter: blur(18px) saturate(160%) !important;
         -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
-        border: 1px solid rgba(255,255,255,0.99) !important;
+        border: 1px solid rgba(255,255,255,1) !important;
         border-radius: 999px !important;
         color:#2B2B31 !important;
-        padding: 12px 58px 12px 18px !important;
+        padding: 12px 18px !important;
         box-shadow: 0 5px 18px rgba(25,25,35,0.14) !important;
       }
 
-      /* Tombol kirim dibuat sebagai tombol bulat terpisah secara visual */
+      /* Tombol kirim berada DI SAMPING kolom, bukan di dalam/bawahnya */
       [data-testid="stChatInput"] button {
+        flex: 0 0 48px !important;
+        width: 48px !important;
+        min-width: 48px !important;
+        height: 48px !important;
+        margin: 0 !important;
+        padding: 0 !important;
         border-radius: 50% !important;
-        width: 40px !important;
-        height: 40px !important;
-        margin-right: 6px !important;
         background: rgba(255,255,255,0.98) !important;
-        border: 1px solid rgba(220,220,225,0.9) !important;
-        box-shadow: 0 3px 12px rgba(30,30,35,0.14) !important;
+        border: 1px solid rgba(255,255,255,1) !important;
+        box-shadow: 0 5px 18px rgba(25,25,35,0.16) !important;
       }
 
-      [data-testid="stChatInput"] > div {
-        gap: 8px !important;
+      [data-testid="stChatInput"] button:hover {
+        transform: translateY(-1px) scale(1.03) !important;
       }
 
       /* Hilangkan latar putih bawaan di area kotak chat input */
@@ -272,6 +288,7 @@ st.markdown(
       [data-testid="stChatInputContainer"] {
         background: transparent !important;
         box-shadow: none !important;
+        border: none !important;
         border-top: none !important;
       }
       [data-testid="stBottomBlockContainer"]::before,
