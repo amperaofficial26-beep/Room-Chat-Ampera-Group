@@ -167,20 +167,22 @@ st.markdown(
         box-shadow:0 10px 30px rgba(25,27,32,.16), inset 0 1px 0 rgba(255,255,255,.65);
         backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
       .logo-wrap::before {
-        content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
-        background:linear-gradient(105deg, transparent 0%, transparent 38%, rgba(255,255,255,0) 42%, rgba(255,255,255,.92) 50%, rgba(255,255,255,0) 58%, transparent 62%, transparent 100%);
-        background-size:220% 100%; background-position:140% 0;
-        mix-blend-mode:screen; opacity:.72;
-        animation:glowBerjalan 3.8s ease-in-out infinite;
+        content:""; position:absolute; top:-18%; bottom:-18%; left:-48%; width:42%; z-index:3; pointer-events:none;
+        background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,.12) 22%, rgba(255,255,255,.78) 50%, rgba(255,255,255,.12) 78%, transparent 100%);
+        filter:blur(8px); opacity:.42; transform:skewX(-14deg) translateX(0);
+        mix-blend-mode:screen; will-change:transform,opacity;
+        animation:glowBerjalan 5.8s cubic-bezier(.45,0,.55,1) infinite;
       }
       .logo-wrap img { position:relative; z-index:2; width:100%; height:100%;
         object-fit:cover; display:block; border-radius:22px;
         box-shadow:0 5px 18px rgba(20,22,26,.18); }
       .logo-fallback { font-family:Georgia,serif; font-size:2.2rem; font-weight:700; color:#2B2B31; }
       @keyframes glowBerjalan {
-        0%, 15% { background-position:140% 0; opacity:.15; }
-        50% { background-position:0% 0; opacity:.78; }
-        85%, 100% { background-position:-140% 0; opacity:.15; }
+        0%, 18% { transform:skewX(-14deg) translateX(0); opacity:0; }
+        30% { opacity:.20; }
+        50% { opacity:.46; }
+        70% { opacity:.20; }
+        82%, 100% { transform:skewX(-14deg) translateX(390%); opacity:0; }
       }
 
       /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
@@ -209,6 +211,7 @@ st.markdown(
          position: relative !important; padding: .55rem .78rem !important;
          max-width: 78% !important; width: fit-content !important; min-width: 80px !important;
          margin-top: .24rem !important; margin-bottom: .24rem !important;
+         align-self: flex-start !important;
          border: none !important; border-radius: 14px !important;
          box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
          backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
@@ -216,12 +219,12 @@ st.markdown(
          animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-         margin-right: auto !important; margin-left: 0 !important;
+         align-self: flex-start !important; margin-right: auto !important; margin-left: 0 !important;
          background: linear-gradient(135deg, #AEB3B9, #92979E) !important; color: #FFFFFF !important;
          border-top-left-radius: 5px !important; transform-origin: left bottom;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         margin-left: auto !important; margin-right: 0 !important;
+         align-self: flex-end !important; margin-left: auto !important; margin-right: 0 !important;
          display:flex !important; flex-direction:row !important;
          background: linear-gradient(135deg, #E5E7EA, #D2D5D9) !important; color: #202124 !important;
          border-top-right-radius: 5px !important; transform-origin: right bottom;
