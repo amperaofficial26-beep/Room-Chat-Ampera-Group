@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import html
 import random
+from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -158,36 +159,45 @@ st.markdown(
          100% { transform: translate3d(-1%, 4%, 0) scale(1.02); }
       }
       /* ---------- Logo Ampera Official ---------- */
-      .logo-wrap { position:relative; width:150px; height:150px; margin:.15rem auto .35rem;
+      .logo-wrap { position:relative; width:142px; height:142px; margin:.15rem auto .8rem;
         display:flex; align-items:center; justify-content:center; overflow:hidden;
-        border-radius:24px; background:rgba(255,255,255,.20);
-        border:1px solid rgba(255,255,255,.58);
-        box-shadow:0 10px 30px rgba(25,27,32,.16), inset 0 1px 0 rgba(255,255,255,.65);
-        backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
-      .logo-wrap::before {
-        content:""; position:absolute; inset:-45%;
-        background:conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,.75) 55deg, transparent 105deg, transparent 220deg, rgba(255,255,255,.45) 285deg, transparent 330deg);
-        animation:putarGlow 6s linear infinite; pointer-events:none;
-      }
+        border-radius:25px; background:rgba(255,255,255,.18);
+        border:1px solid rgba(255,255,255,.68);
+        box-shadow:0 12px 34px rgba(25,27,32,.18), inset 0 1px 0 rgba(255,255,255,.75);
+        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
       .logo-wrap img { position:relative; z-index:2; width:100%; height:100%;
-        object-fit:cover; display:block; border-radius:22px;
+        object-fit:cover; display:block; border-radius:23px;
         box-shadow:0 5px 18px rgba(20,22,26,.18); }
-      @keyframes putarGlow { to { transform:rotate(360deg); } }
+      /* Kilatan putih bergerak dari kiri ke kanan melewati logo */
+      .logo-wrap::after { content:""; position:absolute; z-index:3; top:-20%; bottom:-20%; left:-65%; width:42%;
+        transform:skewX(-20deg); pointer-events:none;
+        background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,.96) 50%, rgba(255,255,255,.18) 78%, transparent 100%);
+        filter:blur(7px); mix-blend-mode:screen;
+        animation:logoShine 3.8s cubic-bezier(.45,0,.25,1) infinite; }
+      .logo-wrap::before { content:""; position:absolute; z-index:1; inset:-2px; border-radius:27px;
+        box-shadow:0 0 0 1px rgba(255,255,255,.35), 0 0 22px rgba(255,255,255,.18);
+        pointer-events:none; }
+      @keyframes logoShine {
+        0%, 18% { left:-65%; opacity:0; }
+        28% { opacity:1; }
+        62% { left:125%; opacity:1; }
+        70%, 100% { left:125%; opacity:0; }
+      }
 
       /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
-      .room-head { text-align:center; padding:.3rem 0 .5rem; }
+      .room-head { text-align:center; padding:.05rem 0 .75rem; }
       .room-head .judul { font-family:Georgia,"Times New Roman",serif;
-        font-weight:600; font-size:1.55rem; letter-spacing:.16em; margin:0;
-        text-transform:uppercase; color:#2B2B31; }
-      .room-head .sub { font-size:.68rem; letter-spacing:.32em; color:#8A8A93;
-        margin-top:7px; font-weight:600; }
-      .room-head .garis { width:38px; height:1px; margin:.55rem auto 0;
-        background:linear-gradient(90deg,transparent,#B9B9C2,transparent); }
+        font-weight:600; font-size:1.42rem; letter-spacing:.13em; margin:0;
+        text-transform:uppercase; color:#292A30; line-height:1.2; }
+      .room-head .sub { font-size:.62rem; letter-spacing:.38em; color:#85868F;
+        margin-top:8px; font-weight:700; }
+      .room-head .garis { width:46px; height:2px; margin:.62rem auto 0;
+        border-radius:999px; background:linear-gradient(90deg,transparent,#A8AAB2,transparent); }
 
       /* ---------- Kartu kaca dasar ---------- */
       [data-testid="stVerticalBlockBorderWrapper"],
       [data-testid="stExpander"] details {
-         background: rgba(255,255,255,0.34) !important;
+         background: rgba(255,255,255,0.30) !important;
          backdrop-filter: blur(22px) saturate(150%) !important;
          -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
          border: 1px solid rgba(255,255,255,0.48) !important;
@@ -197,9 +207,9 @@ st.markdown(
 
       /* ---------- Chat bubble gaya WhatsApp ---------- */
       [data-testid="stChatMessage"] {
-         position: relative !important; padding: .55rem .78rem !important;
-         max-width: 78% !important; width: fit-content !important; min-width: 80px !important;
-         margin-top: .24rem !important; margin-bottom: .24rem !important;
+         position: relative !important; padding: .55rem .82rem !important;
+         max-width: 76% !important; width: fit-content !important; min-width: 92px !important;
+         margin-top: .22rem !important; margin-bottom: .22rem !important;
          border: none !important; border-radius: 14px !important;
          box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
          backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
@@ -217,10 +227,12 @@ st.markdown(
          border-top-right-radius: 5px !important; transform-origin: right bottom;
       }
       @keyframes bubbleIn {
-         0% { opacity:0; transform:translateY(10px) scale(.92); filter:blur(2px); }
+         0% { opacity:0; transform:translateY(9px) scale(.94); filter:blur(2px); }
          70% { opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); }
          100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
       }
+      [data-testid="stChatMessage"] p { margin:.08rem 0 !important; line-height:1.48 !important; }
+      [data-testid="stChatMessage"] .admin-badge { vertical-align:middle; }
       @media (prefers-reduced-motion: reduce) {
          [data-testid="stChatMessage"] { animation:none !important; }
       }
@@ -343,9 +355,16 @@ st.markdown(
          transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,.84) !important;
       }
       @media (min-width: 700px) { .room-head { padding-right: 115px; } }
+      @media (max-width: 600px) {
+        .logo-wrap { width:122px; height:122px; border-radius:22px; }
+        .logo-wrap img { border-radius:20px; }
+        .room-head .judul { font-size:1.12rem; letter-spacing:.10em; }
+        .room-head .sub { font-size:.56rem; letter-spacing:.28em; }
+        [data-testid="stChatMessage"] { max-width:84% !important; }
+      }
       /* ---------- Elemen kecil ---------- */
-      .admin-badge { display:inline-block; font-size:.64rem; font-weight:700;
-        color:#3A3A40; background:rgba(200,200,210,0.35);
+      .admin-badge { display:inline-block; font-size:.60rem; font-weight:700;
+        color:#35363B; background:rgba(235,235,240,0.55);
         border:1px solid rgba(180,180,192,0.5);
         border-radius:999px; padding:1px 9px; margin-left:6px;
         backdrop-filter: blur(6px); }
@@ -359,10 +378,11 @@ st.markdown(
 
 
 def _logo_html() -> str:
-    # Embed logo sebagai data URI agar gambar lokal dari repository
-    # tetap bisa ditampilkan di st.markdown/HTML Streamlit.
+    # Embed logo sebagai data URI agar gambar lokal repo selalu terbaca,
+    # termasuk saat working directory Streamlit berbeda.
     try:
-        with open(LOGO_URL, "rb") as f:
+        logo_path = Path(__file__).resolve().parent / LOGO_URL
+        with open(logo_path, "rb") as f:
             logo_b64 = base64.b64encode(f.read()).decode("utf-8")
         logo_src = f"data:image/png;base64,{logo_b64}"
         return f'<div class="logo-wrap"><img src="{logo_src}" alt="Ampera Official Group" /></div>'
@@ -469,12 +489,17 @@ def halaman_room() -> None:
         f'margin-bottom:.4rem;">Masuk sebagai: {identitas}</div>',
         unsafe_allow_html=True,
     )
-    st.caption("⚡ Setiap pesanmu langsung terkirim ke admin Ampera Official.")
+    st.markdown(
+        '<div style="text-align:center;color:#686A72;font-size:.78rem;'
+        'margin:.05rem 0 .7rem;line-height:1.45;">⚡ Setiap pesanmu langsung '
+        'terkirim ke admin Ampera Official.</div>',
+        unsafe_allow_html=True,
+    )
 
     # Panel kontak kecil di sisi kiri — bisa diisi / diganti kapan saja,
     # ikut terkirim di pesan berikutnya, jadi admin tahu harus membalas
     # ke mana.
-    col_kontak, _ = st.columns([1, 2])
+    col_kontak, _ = st.columns([1.15, 1.85])
     with col_kontak:
         st.markdown('<div class="panel-kontak">', unsafe_allow_html=True)
         with st.expander("✏️ Kontak", expanded=False):
