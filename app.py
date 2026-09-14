@@ -185,7 +185,7 @@ st.markdown(
       }
 
       /* ---------- Header / teks judul — elegan, monokrom (bukan pelangi) ---------- */
-      .room-head { text-align:center; padding:.05rem 0 .75rem; }
+      .room-head { text-align: center;padding: .3rem 0 .5rem; transform: translateX(50px); }
       .room-head .judul { font-family:Georgia,"Times New Roman",serif;
         font-weight:600; font-size:1.42rem; letter-spacing:.13em; margin:0;
         text-transform:uppercase; color:#292A30; line-height:1.2; }
