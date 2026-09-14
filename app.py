@@ -130,21 +130,32 @@ def init_state() -> None:
 st.markdown(
     """
     <style>
-      /* ---------- Latar: silver & putih, mengalir pelan ---------- */
-      .appview-container, .stApp {
-        background: linear-gradient(120deg,
-          #F6F6F8 0%, #E9EAEE 22%, #FFFFFF 45%,
-          #DCDDE3 68%, #F1F1F4 86%, #F6F6F8 100%) !important;
-        background-size: 400% 400% !important;
-        animation: aliranSilver 22s ease-in-out infinite !important;
-        background-attachment: fixed !important;
+      /* ---------- Latar: silver + charcoal terang, bergerak ---------- */
+      .stApp, .appview-container, [data-testid="stAppViewContainer"] {
+         background:
+           radial-gradient(circle at 12% 18%, rgba(255,255,255,.34), transparent 30%),
+           radial-gradient(circle at 86% 78%, rgba(255,255,255,.16), transparent 32%),
+           linear-gradient(125deg, #D9DADF 0%, #AEB1B9 18%, #E7E8EB 36%, #767981 55%, #B9BBC1 72%, #4E5057 100%) !important;
+         background-size: 140% 140%, 150% 150%, 400% 400% !important;
+         background-position: 0% 50%, 100% 50%, 0% 50% !important;
+         animation: aliranSilverCharcoal 18s ease-in-out infinite !important;
+         background-attachment: fixed !important;
       }
-      @keyframes aliranSilver {
-        0%   { background-position: 0% 50%; }
-        50%  { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+      .stApp::before {
+         content: ""; position: fixed; inset: -25%; pointer-events: none; z-index: 0;
+         background: radial-gradient(circle at 25% 35%, rgba(255,255,255,.18), transparent 22%), radial-gradient(circle at 72% 60%, rgba(255,255,255,.10), transparent 24%);
+         filter: blur(35px); animation: kabutCharcoal 24s ease-in-out infinite alternate;
       }
-
+      @keyframes aliranSilverCharcoal {
+         0% { background-position: 0% 45%, 100% 55%, 0% 50%; }
+         50% { background-position: 100% 55%, 0% 45%, 100% 50%; }
+         100% { background-position: 0% 45%, 100% 55%, 0% 50%; }
+      }
+      @keyframes kabutCharcoal {
+         0% { transform: translate3d(-3%, -2%, 0) scale(1); }
+         50% { transform: translate3d(3%, 2%, 0) scale(1.06); }
+         100% { transform: translate3d(-1%, 4%, 0) scale(1.02); }
+      }
       /* ---------- Logo + glow berjalan ---------- */
       .logo-wrap { position:relative; width:96px; height:96px; margin:.2rem auto .3rem;
         display:flex; align-items:center; justify-content:center; }
@@ -179,30 +190,45 @@ st.markdown(
 
       /* ---------- Kartu kaca dasar ---------- */
       [data-testid="stVerticalBlockBorderWrapper"],
-      [data-testid="stChatMessage"],
-      [data-testid="stExpander"] details,
-      [data-testid="stChatInput"] {
-        background: rgba(255,255,255,0.42) !important;
-        backdrop-filter: blur(22px) saturate(160%) !important;
-        -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
-        border: 1px solid rgba(255,255,255,0.6) !important;
-        border-radius: 22px !important;
-        box-shadow: 0 8px 26px rgba(40,40,55,0.10),
-                    inset 0 1px 0 rgba(255,255,255,0.65) !important;
+      [data-testid="stExpander"] details {
+         background: rgba(255,255,255,0.34) !important;
+         backdrop-filter: blur(22px) saturate(150%) !important;
+         -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
+         border: 1px solid rgba(255,255,255,0.48) !important;
+         border-radius: 22px !important;
+         box-shadow: 0 8px 26px rgba(25,27,32,0.12), inset 0 1px 0 rgba(255,255,255,0.55) !important;
       }
-      [data-testid="stChatMessage"] { padding:.65rem .95rem !important; max-width:82%; }
 
-      /* ---------- Rapikan gelembung chat: admin kiri, user kanan ---------- */
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-        margin-left: auto !important;
-        flex-direction: row-reverse !important;
-        background: rgba(91,110,245,0.10) !important;
+      /* ---------- Chat bubble gaya WhatsApp ---------- */
+      [data-testid="stChatMessage"] {
+         position: relative !important; padding: .55rem .78rem !important;
+         max-width: 78% !important; width: fit-content !important; min-width: 80px !important;
+         margin-top: .24rem !important; margin-bottom: .24rem !important;
+         border: none !important; border-radius: 12px !important;
+         box-shadow: 0 2px 7px rgba(20,22,26,.12) !important;
+         backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-        margin-right: auto !important;
+         margin-right: auto !important; margin-left: 0 !important;
+         background: rgba(255,255,255,.88) !important; color: #202126 !important;
+         border-top-left-radius: 4px !important;
       }
-      [data-testid="stChatMessageContent"] p { margin-bottom:.15rem !important; }
+      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+         margin-left: auto !important; margin-right: 0 !important; flex-direction: row-reverse !important;
+         background: rgba(220,248,199,.94) !important; color: #172018 !important;
+         border-top-right-radius: 4px !important;
+      }
+      [data-testid="stChatMessageContent"] p { margin-bottom: .12rem !important; line-height: 1.45 !important; }
 
+      /* ---------- Input seperti composer WhatsApp ---------- */
+      [data-testid="stChatInput"] {
+         background: rgba(245,246,247,.88) !important;
+         backdrop-filter: blur(18px) saturate(150%) !important;
+         -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
+         border: 1px solid rgba(255,255,255,.68) !important;
+         border-radius: 999px !important;
+         box-shadow: 0 7px 24px rgba(25,27,32,.18) !important;
+      }
       /* ---------- Input teks: pil kaca ---------- */
       .stTextInput input, [data-testid="stChatInput"] textarea {
         background: rgba(255,255,255,0.55) !important;
@@ -252,19 +278,24 @@ st.markdown(
       .panel-kontak [data-testid="stExpander"] details { border-radius:18px !important; }
       .panel-kontak summary { font-size:.78rem !important; }
 
-      /* ---------- Tombol Keluar mengambang di pojok kanan bawah ---------- */
+      /* ---------- Tombol Keluar: pojok kanan atas ---------- */
       div[data-testid="stElementContainer"]:has(.anchor-keluar)
         + div[data-testid="stElementContainer"] div[data-testid="stButton"] {
-        position: fixed; right: 20px; bottom: 88px; z-index: 999;
+         position: fixed !important; top: 18px !important; right: 20px !important; z-index: 9999 !important;
       }
       div[data-testid="stElementContainer"]:has(.anchor-keluar)
         + div[data-testid="stElementContainer"] div[data-testid="stButton"] button {
-        border-radius: 999px !important; padding:.4rem 1.1rem !important;
-        background: rgba(255,255,255,0.55) !important; color:#5A3030 !important;
-        border:1px solid rgba(255,255,255,0.8) !important;
-        box-shadow: 0 6px 18px rgba(40,40,55,0.16) !important;
+         border-radius: 999px !important; padding: .38rem .95rem !important; min-height: 34px !important;
+         background: rgba(255,255,255,.68) !important; color: #5A3030 !important;
+         border: 1px solid rgba(255,255,255,.82) !important;
+         box-shadow: 0 5px 18px rgba(25,27,32,.20) !important;
+         backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important;
       }
-
+      div[data-testid="stElementContainer"]:has(.anchor-keluar)
+        + div[data-testid="stElementContainer"] div[data-testid="stButton"] button:hover {
+         transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,.84) !important;
+      }
+      @media (min-width: 700px) { .room-head { padding-right: 115px; } }
       /* ---------- Elemen kecil ---------- */
       .admin-badge { display:inline-block; font-size:.64rem; font-weight:700;
         color:#3A3A40; background:rgba(200,200,210,0.35);
