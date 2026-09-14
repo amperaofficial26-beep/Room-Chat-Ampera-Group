@@ -126,22 +126,82 @@ def init_state() -> None:
 st.markdown(
     """
     <style>
-      .appview-container, .stApp { background:
-        radial-gradient(1100px 700px at 50% 20%, #FFFFFF 0%, #F7F1E3 48%, #E8DCC8 100%)
-        !important; }
-      .room-head { text-align:center; padding:1.1rem 0 .4rem; }
-      .room-head .judul { font-family:Georgia,serif; font-weight:700;
-        font-size:1.9rem; letter-spacing:.08em; margin:0;
-        background:linear-gradient(93deg,#5C4632 10%,#A5814F 55%,#5C4632 92%);
+      /* ---------- Latar: gradient warna-warni ala iOS di belakang kaca ---------- */
+      .appview-container, .stApp {
+        background:
+          radial-gradient(900px 600px at 12% 8%,  #7C9CFF66 0%, transparent 60%),
+          radial-gradient(900px 650px at 88% 15%, #FF9BD266 0%, transparent 60%),
+          radial-gradient(950px 700px at 25% 92%, #7CF0D066 0%, transparent 60%),
+          radial-gradient(900px 650px at 90% 88%, #FFD27C66 0%, transparent 60%),
+          linear-gradient(160deg, #EDEFFB 0%, #F4EEFB 45%, #EAF6F3 100%) !important;
+        background-attachment: fixed !important;
+      }
+
+      /* ---------- Header ---------- */
+      .room-head { text-align:center; padding:1.2rem 0 .5rem; }
+      .room-head .judul { font-family:-apple-system,"SF Pro Display",Segoe UI,sans-serif;
+        font-weight:700; font-size:1.85rem; letter-spacing:.01em; margin:0;
+        background:linear-gradient(93deg,#4A5AE8 10%,#B355D8 50%,#E8608F 92%);
         -webkit-background-clip:text; background-clip:text; color:transparent; }
-      .room-head .sub { font-size:.78rem; letter-spacing:.3em; color:#8A7960;
-        margin-top:4px; }
-      [data-testid="stChatMessage"] { border-radius:16px;
-        background:#FFFDF8; border:1px solid #E3D5BC; padding:.6rem .9rem; }
-      .admin-badge { display:inline-block; font-size:.68rem; font-weight:700;
-        color:#7A5C2E; background:#F3E3C0; border:1px solid #D9BE8A;
-        border-radius:999px; padding:1px 9px; margin-left:6px; }
-      .jam { font-size:.68rem; color:#9C8C77; }
+      .room-head .sub { font-size:.72rem; letter-spacing:.28em; color:#6E7280;
+        margin-top:6px; font-weight:600; }
+
+      /* ---------- Kartu kaca dasar: dipakai container, chat bubble, expander ---------- */
+      [data-testid="stVerticalBlockBorderWrapper"],
+      [data-testid="stChatMessage"],
+      [data-testid="stExpander"] details,
+      [data-testid="stChatInput"] {
+        background: rgba(255,255,255,0.38) !important;
+        backdrop-filter: blur(22px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+        border: 1px solid rgba(255,255,255,0.55) !important;
+        border-radius: 22px !important;
+        box-shadow: 0 8px 28px rgba(80,60,140,0.12),
+                    inset 0 1px 0 rgba(255,255,255,0.6) !important;
+      }
+      [data-testid="stChatMessage"] { padding:.7rem 1rem !important; }
+
+      /* ---------- Input teks: pil kaca ---------- */
+      .stTextInput input, [data-testid="stChatInput"] textarea {
+        background: rgba(255,255,255,0.55) !important;
+        backdrop-filter: blur(14px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+        border: 1px solid rgba(255,255,255,0.7) !important;
+        border-radius: 999px !important;
+        color:#2E2A3D !important;
+      }
+      [data-testid="stChatInput"] { border-radius: 26px !important; padding:.2rem .4rem !important; }
+      [data-testid="stChatInput"] textarea { border-radius: 20px !important; }
+
+      /* ---------- Tombol: pil kaca dengan aksen gradient ---------- */
+      .stButton button {
+        border-radius: 999px !important;
+        border: 1px solid rgba(255,255,255,0.6) !important;
+        backdrop-filter: blur(14px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+        font-weight:600 !important;
+        transition: transform .15s ease, box-shadow .15s ease;
+      }
+      .stButton button:hover { transform: translateY(-1px); }
+      .stButton button[kind="primary"] {
+        background: linear-gradient(93deg,#5B6EF5 0%,#B355D8 55%,#E8608F 100%) !important;
+        color:#fff !important; border:none !important;
+        box-shadow: 0 6px 18px rgba(120,80,220,0.35) !important;
+      }
+      .stButton button[kind="secondary"] {
+        background: rgba(255,255,255,0.45) !important; color:#3A3550 !important;
+      }
+
+      /* ---------- Elemen kecil ---------- */
+      .admin-badge { display:inline-block; font-size:.66rem; font-weight:700;
+        color:#5B3FA0; background:rgba(179,85,216,0.16);
+        border:1px solid rgba(179,85,216,0.35);
+        border-radius:999px; padding:1px 9px; margin-left:6px;
+        backdrop-filter: blur(6px); }
+      .jam { font-size:.66rem; color:#8A8496; }
+
+      /* ---------- Sembunyikan chrome default agar kaca lebih menonjol ---------- */
+      [data-testid="stExpander"] { border:none !important; background:transparent !important; }
     </style>
     """,
     unsafe_allow_html=True,
