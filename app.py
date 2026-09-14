@@ -21,6 +21,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import requests
+import base64
 import streamlit as st
 
 WIB = ZoneInfo("Asia/Jakarta")
@@ -358,7 +359,15 @@ st.markdown(
 
 
 def _logo_html() -> str:
-    return f'<div class="logo-wrap"><img src="{LOGO_URL}" alt="Ampera Official Group" onerror="this.parentElement.innerHTML=\'🔱\';this.parentElement.style.fontSize=\'2.4rem\';" /></div>'
+    # Embed logo sebagai data URI agar gambar lokal dari repository
+    # tetap bisa ditampilkan di st.markdown/HTML Streamlit.
+    try:
+        with open(LOGO_URL, "rb") as f:
+            logo_b64 = base64.b64encode(f.read()).decode("utf-8")
+        logo_src = f"data:image/png;base64,{logo_b64}"
+        return f'<div class="logo-wrap"><img src="{logo_src}" alt="Ampera Official Group" /></div>'
+    except Exception:
+        return '<div class="logo-wrap logo-fallback">AOG</div>'
 
 
 def _sapaan_pembuka(nama: str) -> str:
