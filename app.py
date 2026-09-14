@@ -229,17 +229,41 @@ st.markdown(
          border-radius: 999px !important;
          box-shadow: 0 7px 24px rgba(25,27,32,.18) !important;
       }
-      /* ---------- Input teks: pil kaca ---------- */
-      .stTextInput input, [data-testid="stChatInput"] textarea {
-        background: rgba(255,255,255,0.55) !important;
-        backdrop-filter: blur(14px) saturate(150%) !important;
-        -webkit-backdrop-filter: blur(14px) saturate(150%) !important;
-        border: 1px solid rgba(255,255,255,0.75) !important;
+      /* ---------- Kolom chat panjang berbentuk pil ---------- */
+      [data-testid="stChatInput"] {
+        background: transparent !important;
+        border-radius: 999px !important;
+        padding: 0 !important;
+        border: none !important;
+      }
+
+      [data-testid="stChatInput"] textarea {
+        min-height: 48px !important;
+        height: 48px !important;
+        background: rgba(255,255,255,0.96) !important;
+        backdrop-filter: blur(18px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+        border: 1px solid rgba(255,255,255,0.99) !important;
         border-radius: 999px !important;
         color:#2B2B31 !important;
+        padding: 12px 58px 12px 18px !important;
+        box-shadow: 0 5px 18px rgba(25,25,35,0.14) !important;
       }
-      [data-testid="stChatInput"] { border-radius: 26px !important; padding:.2rem .4rem !important; }
-      [data-testid="stChatInput"] textarea { border-radius: 20px !important; }
+
+      /* Tombol kirim dibuat sebagai tombol bulat terpisah secara visual */
+      [data-testid="stChatInput"] button {
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
+        margin-right: 6px !important;
+        background: rgba(255,255,255,0.98) !important;
+        border: 1px solid rgba(220,220,225,0.9) !important;
+        box-shadow: 0 3px 12px rgba(30,30,35,0.14) !important;
+      }
+
+      [data-testid="stChatInput"] > div {
+        gap: 8px !important;
+      }
 
       /* Hilangkan latar putih bawaan di area kotak chat input */
       [data-testid="stBottomBlockContainer"],
