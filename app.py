@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import html
 import random
+import time
 from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -41,11 +42,16 @@ EMAIL_ADMIN = "saputraampera26@gmail.com"    # inbox utama tujuan pesan
 EMAIL_CC = "amperaofficialgroup@gmail.com"   # dapat kopian tiap pesan
 URL_ROOM = "https://room-chat-ampera-group.streamlit.app"  # alamat room ini
 BATAS_PESAN = 2000                           # panjang maksimum 1 pesan
+DURASI_TRANSISI = 1.25                       # detik loading pindah halaman
+DURASI_LOADING_PESAN = 0.75                  # detik minimum loading kirim pesan
 _TIMEOUT = 15
 
-# Ganti dengan link logo AOG kamu (upload logo.png ke repo ini, lalu isi
-# link "raw" GitHub-nya di sini — atau link gambar dari mana saja).
+# Logo utama aplikasi.
 LOGO_URL = "logo.png"
+
+# Maskot Aogi untuk animasi loading.
+# Simpan file maskot ke: assets/aogi-mascot.png
+MASKOT_URL = "assets/aogi-mascot.png"
 
 
 def jam_wib() -> str:
@@ -121,6 +127,8 @@ def init_state() -> None:
         "tag": "",
         "kontak": "",
         "pesan": [],
+        "transisi": "",
+        "transisi_data": {},
     }.items():
         if k not in st.session_state:
             st.session_state[k] = v
@@ -154,6 +162,231 @@ st.markdown(
         vertical-align: -0.2em;
       }
       .inline-icon { margin-right: .38rem; }
+      /* ---------- Loading maskot Aogi Ampera Official ---------- */
+        .aog-loader-screen {
+          min-height: 64vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem 1rem;
+          position: relative;
+          z-index: 5;
+        }
+        
+        .aog-loader-screen.is-overlay {
+          position: fixed;
+          inset: 0;
+          min-height: 100vh;
+          z-index: 10000;
+          background: rgba(214,216,222,.46);
+          backdrop-filter: blur(16px) saturate(145%);
+          -webkit-backdrop-filter: blur(16px) saturate(145%);
+        }
+        
+        .aog-loader-card {
+          width: min(92vw, 360px);
+          border-radius: 30px;
+          padding: 1.55rem 1.35rem 1.35rem;
+          text-align: center;
+          background: rgba(255,255,255,.38);
+          border: 1px solid rgba(255,255,255,.68);
+          box-shadow: 0 24px 70px rgba(25,27,32,.22), inset 0 1px 0 rgba(255,255,255,.72);
+          animation: loaderCardIn .36s cubic-bezier(.16,1,.3,1) both;
+        }
+        
+        .aog-loader-orbit {
+          position: relative;
+          width: 172px;
+          height: 172px;
+          margin: 0 auto 1.05rem;
+          display: grid;
+          place-items: center;
+        }
+        
+        .aog-loader-ring {
+          position: absolute;
+          inset: 0;
+          border-radius: 32px;
+          background: conic-gradient(
+            from 0deg,
+            transparent 0deg,
+            rgba(255,255,255,.25) 80deg,
+            #4E5057 145deg,
+            rgba(255,255,255,.96) 215deg,
+            transparent 310deg
+          );
+          animation: loaderRingSpin 1.15s linear infinite;
+          box-shadow: 0 0 32px rgba(255,255,255,.35);
+        }
+        
+        .aog-loader-ring::after {
+          content: "";
+          position: absolute;
+          inset: 8px;
+          border-radius: 25px;
+          background: rgba(230,231,235,.82);
+          border: 1px solid rgba(255,255,255,.65);
+        }
+        
+        .aog-loader-logo {
+          position: relative;
+          z-index: 2;
+          width: 132px;
+          height: 132px;
+          border-radius: 28px;
+          overflow: hidden;
+          background: linear-gradient(145deg, rgba(255,255,255,.78), rgba(235,210,170,.28));
+          border: 1px solid rgba(255,255,255,.8);
+          box-shadow: 0 14px 34px rgba(25,27,32,.2);
+          animation: mascotFloat 1.7s ease-in-out infinite;
+        }
+        
+        .aog-loader-logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
+        }
+        
+        .aog-loader-fallback {
+          width: 100%;
+          height: 100%;
+          display: grid;
+          place-items: center;
+          font-family: Georgia,"Times New Roman",serif;
+          font-weight: 700;
+          letter-spacing: .08em;
+          color: #32343A;
+        }
+        
+        .aog-loader-icon {
+          width: 38px;
+          height: 38px;
+          margin: 0 auto .65rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          color: #FFFFFF;
+          background: linear-gradient(135deg,#3A3A3F,#737780);
+          box-shadow: 0 8px 22px rgba(30,30,40,.22);
+        }
+        
+        .aog-loader-title {
+          margin: 0;
+          color: #292A30;
+          font-size: 1.02rem;
+          font-weight: 800;
+          letter-spacing: .02em;
+        }
+        
+        .aog-loader-subtitle {
+          margin: .38rem auto 0;
+          color: #6A6C74;
+          font-size: .78rem;
+          line-height: 1.45;
+          max-width: 270px;
+        }
+        
+        .aog-loader-dots {
+          display: inline-flex;
+          gap: 5px;
+          margin-top: .82rem;
+        }
+        
+        .aog-loader-dots span {
+          width: 7px;
+          height: 7px;
+          border-radius: 999px;
+          background: #5F626B;
+          animation: loaderDot 1s ease-in-out infinite;
+        }
+        
+        .aog-loader-dots span:nth-child(2) {
+          animation-delay: .16s;
+        }
+        
+        .aog-loader-dots span:nth-child(3) {
+          animation-delay: .32s;
+        }
+        
+        .aog-loader-bar {
+          position: relative;
+          overflow: hidden;
+          width: min(220px, 72%);
+          height: 4px;
+          margin: 1rem auto 0;
+          border-radius: 999px;
+          background: rgba(75,78,86,.16);
+        }
+        
+        .aog-loader-bar::before {
+          content: "";
+          position: absolute;
+          inset: 0 auto 0 -42%;
+          width: 42%;
+          border-radius: inherit;
+          background: linear-gradient(90deg, transparent, #4F525A, transparent);
+          animation: loaderBar 1.05s ease-in-out infinite;
+        }
+        
+        @keyframes loaderCardIn {
+          from {
+            opacity: 0;
+            transform: translateY(14px) scale(.96);
+            filter: blur(3px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+        
+        @keyframes loaderRingSpin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        
+        @keyframes mascotFloat {
+          0%, 100% {
+            transform: translateY(0) scale(1);
+          }
+          50% {
+            transform: translateY(-8px) scale(1.025);
+          }
+        }
+        
+        @keyframes loaderDot {
+          0%, 80%, 100% {
+            opacity: .35;
+            transform: translateY(0) scale(.9);
+          }
+          40% {
+            opacity: 1;
+            transform: translateY(-5px) scale(1.08);
+          }
+        }
+        
+        @keyframes loaderBar {
+          0% {
+            left: -42%;
+          }
+          100% {
+            left: 100%;
+          }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+          .aog-loader-card,
+          .aog-loader-ring,
+          .aog-loader-logo,
+          .aog-loader-dots span,
+          .aog-loader-bar::before {
+            animation: none !important;
+          }
+        }
 
       /* ---------- Latar: silver + charcoal terang, bergerak ---------- */
       .stApp, .appview-container, [data-testid="stAppViewContainer"] {
@@ -460,19 +693,66 @@ st.markdown(
 )
 
 
-def _logo_html() -> str:
-    # Embed logo sebagai data URI agar gambar lokal repo selalu terbaca,
+def _gambar_src(lokasi_gambar: str) -> str:
+    # Embed gambar lokal repo sebagai data URI agar selalu terbaca oleh Streamlit,
     # termasuk saat working directory Streamlit berbeda.
     try:
-        logo_path = Path(__file__).resolve().parent / LOGO_URL
-        with open(logo_path, "rb") as f:
-            logo_b64 = base64.b64encode(f.read()).decode("utf-8")
-        logo_src = f"data:image/png;base64,{logo_b64}"
-        return f'<div class="logo-wrap"><img src="{logo_src}" alt="Ampera Official Group" /></div>'
+        gambar_path = Path(__file__).resolve().parent / lokasi_gambar
+        if not gambar_path.exists():
+            return ""
+        with open(gambar_path, "rb") as f:
+            gambar_b64 = base64.b64encode(f.read()).decode("utf-8")
+        return f"data:image/png;base64,{gambar_b64}"
     except Exception:
+        return ""
+
+
+def _logo_src() -> str:
+    return _gambar_src(LOGO_URL)
+
+
+def _maskot_src() -> str:
+    return _gambar_src(MASKOT_URL)
+
+
+def _logo_html() -> str:
+    logo_src = _logo_src()
+    if not logo_src:
         return '<div class="logo-wrap logo-fallback">AOG</div>'
+    return f'<div class="logo-wrap"><img src="{logo_src}" alt="Ampera Official Group" /></div>'
 
 
+def _loading_html(judul: str, keterangan: str = "", ikon: str = "sync",
+                  overlay: bool = False) -> str:
+    maskot_src = _maskot_src()
+    mascot = (
+        f'<img src="{maskot_src}" alt="Maskot Aogi Ampera Official Group" />'
+        if maskot_src else '<div class="aog-loader-fallback">AOG</div>'
+    )
+    overlay_class = " is-overlay" if overlay else ""
+    keterangan_html = (
+        f'<div class="aog-loader-subtitle">{html.escape(keterangan)}</div>'
+        if keterangan else ""
+    )
+    return f'''
+    <div class="aog-loader-screen{overlay_class}">
+      <div class="aog-loader-card" role="status" aria-live="polite">
+        <div class="aog-loader-orbit">
+          <div class="aog-loader-ring"></div>
+          <div class="aog-loader-logo">{mascot}</div>
+        </div>
+        <div class="aog-loader-icon">
+          <span class="material-symbols-rounded" aria-hidden="true">{html.escape(ikon)}</span>
+        </div>
+        <div class="aog-loader-title">{html.escape(judul)}</div>
+        {keterangan_html}
+        <div class="aog-loader-dots" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="aog-loader-bar" aria-hidden="true"></div>
+      </div>
+    </div>
+    '''
 def _sapaan_pembuka(nama: str) -> str:
     return (
         f"Hai {nama}! Selamat datang di Room Chat Ampera Official. "
@@ -552,16 +832,18 @@ def halaman_masuk() -> None:
                   and "official" in nama_bersih.lower()):
                 st.error("Nama itu khusus admin resmi. Pilih nama lain ya.")
             else:
-                st.session_state.masuk = True
-                st.session_state.nama = nama_bersih
-                st.session_state.tag = str(random.randint(100, 999))
-                st.session_state.kontak = " ".join((kontak or "").split())
-                st.session_state.pesan = [{
-                    "pengirim": "Ampera Official",
-                    "resmi": True,
-                    "teks": _sapaan_pembuka(nama_bersih),
-                    "jam": jam_wib(),
-                }]
+                st.session_state.transisi = "masuk_room"
+                st.session_state.transisi_data = {
+                    "nama": nama_bersih,
+                    "tag": str(random.randint(100, 999)),
+                    "kontak": " ".join((kontak or "").split()),
+                    "pesan": [{
+                        "pengirim": "Ampera Official",
+                        "resmi": True,
+                        "teks": _sapaan_pembuka(nama_bersih),
+                        "jam": jam_wib(),
+                    }],
+                }
                 st.rerun()
 
 
@@ -620,11 +902,9 @@ def halaman_room() -> None:
     # Tombol Keluar — mengambang di pojok kanan atas.
     st.markdown('<span class="anchor-keluar"></span>', unsafe_allow_html=True)
     if st.button(":material/logout: Keluar", key="btn_keluar"):
-        for k in ("masuk", "nama", "tag", "kontak", "pesan",
-                  "in_kontak_edit"):
-            st.session_state.pop(k, None)
+        st.session_state.transisi = "keluar_room"
+        st.session_state.transisi_data = {}
         st.rerun()
-
     teks = st.chat_input("Tulis pesan…")
     if teks and teks.strip():
         bersih = teks.strip()[:BATAS_PESAN]
@@ -634,28 +914,116 @@ def halaman_room() -> None:
             "teks": bersih,
             "jam": jam_wib(),
         })
-        if kirim_ke_admin(
+        loader_slot = st.empty()
+        loader_slot.markdown(
+            _loading_html(
+                "Mengirim pesan",
+                "Aogi sedang mengantar pesanmu ke admin.",
+                "send",
+                overlay=True,
+            ),
+            unsafe_allow_html=True,
+        )
+        
+        mulai_loading = time.monotonic()
+        terkirim = kirim_ke_admin(
             st.session_state.nama,
             st.session_state.tag,
             st.session_state.kontak,
             bersih,
-        ):
+        )
+        
+        sisa_loading = DURASI_LOADING_PESAN - (time.monotonic() - mulai_loading)
+        if sisa_loading > 0:
+            time.sleep(sisa_loading)
+        
+        if terkirim:
+            loader_slot.markdown(
+                _loading_html(
+                    "Pesan terkirim",
+                    "Pesan berhasil diteruskan ke admin Ampera Official.",
+                    "mark_email_read",
+                    overlay=True,
+                ),
+                unsafe_allow_html=True,
+            )
+            time.sleep(0.55)
             st.toast("Pesan terkirim ke admin Ampera Official", icon=":material/check_circle:")
         else:
+            loader_slot.markdown(
+                _loading_html(
+                    "Pengiriman tertunda",
+                    "Pesan sudah tampil di room, tapi belum masuk ke email admin.",
+                    "error",
+                    overlay=True,
+                ),
+                unsafe_allow_html=True,
+            )
+            time.sleep(0.55)
             st.toast(
                 "Pesan tampil di sini, tapi gagal terkirim ke admin — "
                 "coba kirim ulang ya",
                 icon=":material/error:",
             )
+        
+        loader_slot.empty()
         st.rerun()
 
+def halaman_transisi() -> None:
+    aksi = st.session_state.get("transisi", "")
 
+    if aksi == "masuk_room":
+        judul = "Membuka room chat"
+        keterangan = "Aogi sedang menyiapkan ruang percakapanmu."
+        ikon = "forum"
+    elif aksi == "keluar_room":
+        judul = "Keluar dari room"
+        keterangan = "Aogi sedang menutup sesi chat dengan aman."
+        ikon = "logout"
+    else:
+        st.session_state.transisi = ""
+        st.session_state.transisi_data = {}
+        st.rerun()
+
+    st.markdown(
+        _loading_html(judul, keterangan, ikon),
+        unsafe_allow_html=True,
+    )
+
+    time.sleep(DURASI_TRANSISI)
+
+    if aksi == "masuk_room":
+        data = st.session_state.get("transisi_data", {})
+        st.session_state.masuk = True
+        st.session_state.nama = data.get("nama", "")
+        st.session_state.tag = data.get("tag", "")
+        st.session_state.kontak = data.get("kontak", "")
+        st.session_state.pesan = data.get("pesan", [])
+
+    elif aksi == "keluar_room":
+        for k in (
+            "masuk",
+            "nama",
+            "tag",
+            "kontak",
+            "pesan",
+            "in_kontak_edit",
+            "in_nama",
+            "in_kontak",
+        ):
+            st.session_state.pop(k, None)
+
+    st.session_state.transisi = ""
+    st.session_state.transisi_data = {}
+    st.rerun()
 # ---------------------------------------------------------------------------
 # JALAN UTAMA
 # ---------------------------------------------------------------------------
 init_state()
 
-if st.session_state.masuk:
+if st.session_state.transisi:
+    halaman_transisi()
+elif st.session_state.masuk:
     halaman_room()
 else:
     halaman_masuk()
