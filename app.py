@@ -48,11 +48,8 @@ _TIMEOUT = 15
 
 # Logo utama aplikasi.
 LOGO_URL = "logo.png"
-
-# Maskot Aogi untuk animasi loading.
-# Simpan file maskot ke: assets/aogi-mascot.png
-MASKOT_URL = "assets/aogi-mascot.png"
-
+MASKOT_URL = "assets/aogi-maskot.png"  # gambar maskot Aogi untuk animasi loading
+MASKOT_URL_CADANGAN = ("assets/aogi maskot.png", "assets/aogi-mascot.png")
 
 def jam_wib() -> str:
     return datetime.now(WIB).strftime("%d %b %H:%M")
@@ -196,29 +193,20 @@ st.markdown(
         
         .aog-loader-orbit {
           position: relative;
-          width: 172px;
-          height: 172px;
+          width: 214px;
+          height: 214px;
           margin: 0 auto 1.05rem;
           display: grid;
           place-items: center;
         }
-        
         .aog-loader-ring {
           position: absolute;
           inset: 0;
           border-radius: 32px;
-          background: conic-gradient(
-            from 0deg,
-            transparent 0deg,
-            rgba(255,255,255,.25) 80deg,
-            #4E5057 145deg,
-            rgba(255,255,255,.96) 215deg,
-            transparent 310deg
-          );
+          background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,.25) 80deg, #4E5057 145deg, rgba(255,255,255,.96) 215deg, transparent 310deg);
           animation: loaderRingSpin 1.15s linear infinite;
           box-shadow: 0 0 32px rgba(255,255,255,.35);
         }
-        
         .aog-loader-ring::after {
           content: "";
           position: absolute;
@@ -227,13 +215,12 @@ st.markdown(
           background: rgba(230,231,235,.82);
           border: 1px solid rgba(255,255,255,.65);
         }
-        
         .aog-loader-logo {
           position: relative;
           z-index: 2;
-          width: 132px;
-          height: 132px;
-          border-radius: 28px;
+          width: 168px;
+          height: 168px;
+          border-radius: 34px;
           overflow: hidden;
           background: linear-gradient(145deg, rgba(255,255,255,.78), rgba(235,210,170,.28));
           border: 1px solid rgba(255,255,255,.8);
@@ -712,8 +699,11 @@ def _logo_src() -> str:
 
 
 def _maskot_src() -> str:
-    return _gambar_src(MASKOT_URL)
-
+    for lokasi_gambar in (MASKOT_URL, *MASKOT_URL_CADANGAN):
+        maskot_src = _gambar_src(lokasi_gambar)
+        if maskot_src:
+            return maskot_src
+    return ""
 
 def _logo_html() -> str:
     logo_src = _logo_src()
