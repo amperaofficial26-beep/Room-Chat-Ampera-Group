@@ -248,44 +248,44 @@ st.markdown(
          animation: bubblePopLeft .48s cubic-bezier(.16,1,.3,1) both;
          will-change: transform, opacity, filter;
       }
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-         margin-right: auto !important;
-         margin-left: 0 !important;
-         background: linear-gradient(135deg, #AEB3B9, #8D9299) !important;
-         color: #FFFFFF !important;
-         border-top-left-radius: 6px !important;
-         transform-origin: left bottom;
-         animation-name: bubblePopLeft;
-      }
-      [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         margin-left: auto !important;
-         margin-right: 0 !important;
-         flex-direction: row-reverse !important;
-         background: linear-gradient(135deg, #F3F4F6, #D8DBE0) !important;
-         color: #202124 !important;
-         border-top-right-radius: 6px !important;
-         transform-origin: right bottom;
-         animation-name: bubblePopRight;
-      }
-      @keyframes bubblePopLeft {
-         0% { opacity:0; transform:translate3d(-18px, 16px, 0) scale(.90); filter:blur(4px); }
-         58% { opacity:1; transform:translate3d(2px, -2px, 0) scale(1.025); filter:blur(0); }
-         100% { opacity:1; transform:translate3d(0, 0, 0) scale(1); filter:blur(0); }
-      }
-      @keyframes bubblePopRight {
-         0% { opacity:0; transform:translate3d(18px, 16px, 0) scale(.90); filter:blur(4px); }
-         58% { opacity:1; transform:translate3d(-2px, -2px, 0) scale(1.025); filter:blur(0); }
-         100% { opacity:1; transform:translate3d(0, 0, 0) scale(1); filter:blur(0); }
-      }
-      [data-testid="stChatMessage"] p { margin:.08rem 0 !important; line-height:1.55 !important; }
-      [data-testid="stChatMessage"] .admin-badge { vertical-align:middle; }
-      [data-testid="stChatMessageContent"] { width: 100% !important; }
-      [data-testid="stChatMessageContent"] p { margin-bottom: .12rem !important; line-height: 1.55 !important; }
-      [data-testid="stChatMessageAvatarAssistant"],
-      [data-testid="stChatMessageAvatarUser"] { transform: scale(1.08); }
-      @media (prefers-reduced-motion: reduce) {
-         [data-testid="stChatMessage"] { animation:none !important; }
-      }
+        [data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"]),
+        [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+           margin-right: auto !important;
+           margin-left: 0 !important;
+           background: linear-gradient(135deg, #AEB3B9, #8D9299) !important;
+           color: #FFFFFF !important;
+           border-top-left-radius: 6px !important;
+           transform-origin: left bottom;
+           animation-name: bubblePopLeft;
+        }
+        [data-testid="stChatMessage"]:has([aria-label="Chat message from user"]),
+        [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+           margin-left: auto !important;
+           margin-right: 0 !important;
+           flex-direction: row-reverse !important;
+           background: linear-gradient(135deg, #F3F4F6, #D8DBE0) !important;
+           color: #202124 !important;
+           border-top-right-radius: 6px !important;
+           transform-origin: right bottom;
+           animation-name: bubblePopRight;
+        }
+        @keyframes bubblePopLeft {
+           0% { opacity:0; transform:translate3d(-18px, 16px, 0) scale(.90); filter:blur(4px); }
+           58% { opacity:1; transform:translate3d(2px, -2px, 0) scale(1.025); filter:blur(0); }
+           100% { opacity:1; transform:translate3d(0, 0, 0) scale(1); filter:blur(0); }
+        }
+        @keyframes bubblePopRight {
+           0% { opacity:0; transform:translate3d(18px, 16px, 0) scale(.90); filter:blur(4px); }
+           58% { opacity:1; transform:translate3d(-2px, -2px, 0) scale(1.025); filter:blur(0); }
+           100% { opacity:1; transform:translate3d(0, 0, 0) scale(1); filter:blur(0); }
+        }
+        [data-testid="stChatMessage"] p { margin:.08rem 0 !important; line-height:1.55 !important; }
+        [data-testid="stChatMessage"] .admin-badge { vertical-align:middle; }
+        [data-testid="stChatMessageContent"] { width: 100% !important; }
+        [data-testid="stChatMessageContent"] p { margin-bottom: .12rem !important; line-height: 1.55 !important; }
+        [data-testid="stChatMessageAvatarAssistant"],
+        [data-testid="stChatMessageAvatarUser"],
+        [data-testid="stChatMessageAvatarCustom"] { transform: scale(1.08); }
 
       /* ---------- Input seperti composer WhatsApp ---------- */
       [data-testid="stChatInput"] {
