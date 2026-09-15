@@ -29,7 +29,7 @@ WIB = ZoneInfo("Asia/Jakarta")
 
 st.set_page_config(
     page_title="Room Chat Ampera Official",
-    page_icon="🔱",
+    page_icon=":material/forum:",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
@@ -71,7 +71,7 @@ def kirim_ke_admin(nama: str, tag: str, kontak: str, pesan: str) -> bool:
         "Pesan": pesan,
         "Kontak": kontak or "(tidak diisi)",
         "Waktu (WIB)": jam_wib(),
-        "_subject": f"💬 {nama} #{tag}: {pesan[:40]}",
+        "_subject": f"Chat {nama} #{tag}: {pesan[:40]}",
         "_template": "table",
         "_captcha": "false",
         "_cc": EMAIL_CC,
@@ -132,6 +132,29 @@ def init_state() -> None:
 st.markdown(
     """
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200');
+
+      .material-symbols-rounded {
+        font-family: 'Material Symbols Rounded';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 1.05em;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+        font-variation-settings: 'FILL' 1, 'wght' 550, 'GRAD' 0, 'opsz' 24;
+        vertical-align: -0.2em;
+      }
+      .inline-icon { margin-right: .38rem; }
+
       /* ---------- Latar: silver + charcoal terang, bergerak ---------- */
       .stApp, .appview-container, [data-testid="stAppViewContainer"] {
          background:
@@ -205,38 +228,64 @@ st.markdown(
          box-shadow: 0 8px 26px rgba(25,27,32,0.12), inset 0 1px 0 rgba(255,255,255,0.55) !important;
       }
 
-      /* ---------- Chat bubble gaya WhatsApp ---------- */
+      /* ---------- Chat bubble lebih besar + animasi masuk ---------- */
       [data-testid="stChatMessage"] {
-         position: relative !important; padding: .55rem .82rem !important;
-         max-width: 76% !important; width: fit-content !important; min-width: 92px !important;
-         margin-top: .22rem !important; margin-bottom: .22rem !important;
-         border: none !important; border-radius: 14px !important;
-         box-shadow: 0 3px 10px rgba(20,22,26,.14) !important;
-         backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+         position: relative !important;
+         padding: .82rem 1.05rem !important;
+         max-width: 86% !important;
+         width: fit-content !important;
+         min-width: 138px !important;
+         margin-top: .34rem !important;
+         margin-bottom: .34rem !important;
+         border: none !important;
+         border-radius: 19px !important;
+         box-shadow: 0 10px 28px rgba(20,22,26,.17) !important;
+         backdrop-filter: blur(13px) !important;
+         -webkit-backdrop-filter: blur(13px) !important;
+         font-size: .98rem !important;
+         line-height: 1.55 !important;
          transform-origin: left bottom;
-         animation: bubbleIn .34s cubic-bezier(.22,.8,.24,1) both;
+         animation: bubblePopLeft .48s cubic-bezier(.16,1,.3,1) both;
+         will-change: transform, opacity, filter;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-         margin-right: auto !important; margin-left: 0 !important;
-         background: linear-gradient(135deg, #AEB3B9, #92979E) !important; color: #FFFFFF !important;
-         border-top-left-radius: 5px !important; transform-origin: left bottom;
+         margin-right: auto !important;
+         margin-left: 0 !important;
+         background: linear-gradient(135deg, #AEB3B9, #8D9299) !important;
+         color: #FFFFFF !important;
+         border-top-left-radius: 6px !important;
+         transform-origin: left bottom;
+         animation-name: bubblePopLeft;
       }
       [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-         margin-left: auto !important; margin-right: 0 !important; flex-direction: row-reverse !important;
-         background: linear-gradient(135deg, #E5E7EA, #D2D5D9) !important; color: #202124 !important;
-         border-top-right-radius: 5px !important; transform-origin: right bottom;
+         margin-left: auto !important;
+         margin-right: 0 !important;
+         flex-direction: row-reverse !important;
+         background: linear-gradient(135deg, #F3F4F6, #D8DBE0) !important;
+         color: #202124 !important;
+         border-top-right-radius: 6px !important;
+         transform-origin: right bottom;
+         animation-name: bubblePopRight;
       }
-      @keyframes bubbleIn {
-         0% { opacity:0; transform:translateY(9px) scale(.94); filter:blur(2px); }
-         70% { opacity:1; transform:translateY(-1px) scale(1.01); filter:blur(0); }
-         100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+      @keyframes bubblePopLeft {
+         0% { opacity:0; transform:translate3d(-18px, 16px, 0) scale(.90); filter:blur(4px); }
+         58% { opacity:1; transform:translate3d(2px, -2px, 0) scale(1.025); filter:blur(0); }
+         100% { opacity:1; transform:translate3d(0, 0, 0) scale(1); filter:blur(0); }
       }
-      [data-testid="stChatMessage"] p { margin:.08rem 0 !important; line-height:1.48 !important; }
+      @keyframes bubblePopRight {
+         0% { opacity:0; transform:translate3d(18px, 16px, 0) scale(.90); filter:blur(4px); }
+         58% { opacity:1; transform:translate3d(-2px, -2px, 0) scale(1.025); filter:blur(0); }
+         100% { opacity:1; transform:translate3d(0, 0, 0) scale(1); filter:blur(0); }
+      }
+      [data-testid="stChatMessage"] p { margin:.08rem 0 !important; line-height:1.55 !important; }
       [data-testid="stChatMessage"] .admin-badge { vertical-align:middle; }
+      [data-testid="stChatMessageContent"] { width: 100% !important; }
+      [data-testid="stChatMessageContent"] p { margin-bottom: .12rem !important; line-height: 1.55 !important; }
+      [data-testid="stChatMessageAvatarAssistant"],
+      [data-testid="stChatMessageAvatarUser"] { transform: scale(1.08); }
       @media (prefers-reduced-motion: reduce) {
          [data-testid="stChatMessage"] { animation:none !important; }
       }
-      [data-testid="stChatMessageContent"] p { margin-bottom: .12rem !important; line-height: 1.45 !important; }
 
       /* ---------- Input seperti composer WhatsApp ---------- */
       [data-testid="stChatInput"] {
@@ -360,15 +409,49 @@ st.markdown(
         .logo-wrap img { border-radius:20px; }
         .room-head .judul { font-size:1.12rem; letter-spacing:.10em; }
         .room-head .sub { font-size:.56rem; letter-spacing:.28em; }
-        [data-testid="stChatMessage"] { max-width:84% !important; }
+        [data-testid="stChatMessage"] {
+          max-width:92% !important;
+          min-width:120px !important;
+          padding:.76rem .92rem !important;
+          margin-top:.30rem !important;
+          margin-bottom:.30rem !important;
+        }
       }
       /* ---------- Elemen kecil ---------- */
-      .admin-badge { display:inline-block; font-size:.60rem; font-weight:700;
-        color:#35363B; background:rgba(235,235,240,0.55);
-        border:1px solid rgba(180,180,192,0.5);
-        border-radius:999px; padding:1px 9px; margin-left:6px;
-        backdrop-filter: blur(6px); }
-      .jam { font-size:.64rem; color:#96969E; }
+      .sender-name {
+        display:inline-block;
+        font-weight:700;
+        letter-spacing:.01em;
+        margin-bottom:.18rem;
+      }
+      .bubble-text {
+        margin:.10rem 0 .22rem;
+        line-height:1.56;
+        word-break:break-word;
+      }
+      .admin-badge {
+        display:inline-flex;
+        align-items:center;
+        gap:4px;
+        font-size:.62rem;
+        font-weight:800;
+        color:#35363B;
+        background:rgba(235,235,240,0.64);
+        border:1px solid rgba(180,180,192,0.54);
+        border-radius:999px;
+        padding:3px 10px;
+        margin-left:7px;
+        backdrop-filter: blur(6px);
+      }
+      .admin-badge .material-symbols-rounded { font-size:.85rem; }
+      .jam {
+        display:inline-flex;
+        align-items:center;
+        gap:4px;
+        font-size:.68rem;
+        color:#8C8D96;
+      }
+      .jam .material-symbols-rounded { font-size:.84rem; font-variation-settings:'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
 
       [data-testid="stExpander"] { border:none !important; background:transparent !important; }
     </style>
@@ -392,23 +475,34 @@ def _logo_html() -> str:
 
 def _sapaan_pembuka(nama: str) -> str:
     return (
-        f"Hai {nama}! 👋 Selamat datang di Room Chat Ampera Official. "
+        f"Hai {nama}! Selamat datang di Room Chat Ampera Official. "
         "Tulis pesanmu di kotak paling bawah — mau tanya-tanya produk, "
         "harga, atau langganan, semuanya langsung terkirim ke admin "
         "Ampera Official. Pesanmu di room ini cuma dilihat oleh kamu dan "
-        "admin 😉"
+        "admin."
     )
 
 
 def _bubble(m: dict) -> None:
     resmi = bool(m.get("resmi"))
-    label = f"**{html.escape(str(m.get('pengirim', 'Seseorang')))}**" + (
-        '<span class="admin-badge">👑 RESMI</span>' if resmi else "")
-    with st.chat_message("assistant" if resmi else "user",
-                         avatar="🔱" if resmi else None):
+    pengirim = html.escape(str(m.get("pengirim", "Seseorang")))
+    teks = html.escape(str(m.get("teks", ""))).replace("\n", "<br>")
+    jam = html.escape(str(m.get("jam", "")))
+    label = f'<span class="sender-name">{pengirim}</span>'
+    if resmi:
+        label += (
+            '<span class="admin-badge">'
+            '<span class="material-symbols-rounded" aria-hidden="true">verified</span>'
+            'RESMI</span>'
+        )
+    avatar = ":material/verified_user:" if resmi else ":material/person:"
+    with st.chat_message("assistant" if resmi else "user", avatar=avatar):
         st.markdown(
-            f"{label}  \n{html.escape(str(m.get('teks', '')))}  \n"
-            f'<span class="jam">{html.escape(str(m.get("jam", "")))}</span>',
+            f"{label}"
+            f'<div class="bubble-text">{teks}</div>'
+            '<span class="jam">'
+            '<span class="material-symbols-rounded" aria-hidden="true">schedule</span>'
+            f"{jam}</span>",
             unsafe_allow_html=True,
         )
 
@@ -449,7 +543,7 @@ def halaman_masuk() -> None:
             placeholder="biar admin bisa membalas kamu",
             key="in_kontak",
         )
-        if st.button("Masuk Room", use_container_width=True, type="primary",
+        if st.button(":material/login: Masuk Room", use_container_width=True, type="primary",
                      key="btn_masuk"):
             nama_bersih = " ".join((nama or "").split())
             if not nama_bersih:
@@ -491,8 +585,9 @@ def halaman_room() -> None:
     )
     st.markdown(
         '<div style="text-align:center;color:#686A72;font-size:.78rem;'
-        'margin:.05rem 0 .7rem;line-height:1.45;">⚡ Setiap pesanmu langsung '
-        'terkirim ke admin Ampera Official.</div>',
+        'margin:.05rem 0 .7rem;line-height:1.45;">'
+        '<span class="material-symbols-rounded inline-icon" aria-hidden="true">bolt</span>'
+        'Setiap pesanmu langsung terkirim ke admin Ampera Official.</div>',
         unsafe_allow_html=True,
     )
 
@@ -502,7 +597,7 @@ def halaman_room() -> None:
     col_kontak, _ = st.columns([1.15, 1.85])
     with col_kontak:
         st.markdown('<div class="panel-kontak">', unsafe_allow_html=True)
-        with st.expander("✏️ Kontak", expanded=False):
+        with st.expander(":material/edit: Kontak", expanded=False):
             st.caption(
                 f"Saat ini: {st.session_state.kontak or 'belum diisi'}"
             )
@@ -512,10 +607,10 @@ def halaman_room() -> None:
                 max_chars=60,
                 key="in_kontak_edit",
             )
-            if st.button("Simpan", key="btn_simpan_kontak"):
+            if st.button(":material/save: Simpan", key="btn_simpan_kontak"):
                 st.session_state.kontak = " ".join((baru or "").split())
                 st.session_state.pop("in_kontak_edit", None)
-                st.toast("Kontak kamu tersimpan ✅")
+                st.toast("Kontak kamu tersimpan", icon=":material/check_circle:")
                 st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -524,7 +619,7 @@ def halaman_room() -> None:
 
     # Tombol Keluar — mengambang di pojok kanan atas.
     st.markdown('<span class="anchor-keluar"></span>', unsafe_allow_html=True)
-    if st.button("🚪 Keluar", key="btn_keluar"):
+    if st.button(":material/logout: Keluar", key="btn_keluar"):
         for k in ("masuk", "nama", "tag", "kontak", "pesan",
                   "in_kontak_edit"):
             st.session_state.pop(k, None)
@@ -545,10 +640,13 @@ def halaman_room() -> None:
             st.session_state.kontak,
             bersih,
         ):
-            st.toast("Pesan terkirim ke admin Ampera Official ✅")
+            st.toast("Pesan terkirim ke admin Ampera Official", icon=":material/check_circle:")
         else:
-            st.toast("Pesan tampil di sini, tapi gagal terkirim ke admin — "
-                     "coba kirim ulang ya ⚠️")
+            st.toast(
+                "Pesan tampil di sini, tapi gagal terkirim ke admin — "
+                "coba kirim ulang ya",
+                icon=":material/error:",
+            )
         st.rerun()
 
 
