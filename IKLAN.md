@@ -90,3 +90,38 @@ gambar dari internet, misalnya link "raw" GitHub atau CDN.
   terbaca walau working directory Streamlit berbeda.
 - Pengguna yang mengaktifkan "reduce motion" di HP/laptopnya akan melihat
   banner pertama saja tanpa animasi (otomatis, sesuai standar aksesibilitas).
+
+---
+
+# Maskot "Aogi"
+
+Maskot tampil di **tiga tempat**, semuanya bisa dinyalakan/dimatikan dari
+bagian `MASKOT` di `app.py`:
+
+```python
+MASKOT_NAMA = "Aogi"
+MASKOT_AVATAR = True      # wajah maskot jadi avatar bubble chat admin
+MASKOT_SAMBUTAN = True    # maskot menyapa di halaman masuk
+MASKOT_PEEK = True        # maskot mengintip di pojok kanan bawah room
+MASKOT_SAPAAN = "Halo! Aku Aogi, temanmu di room ini. Yuk masuk 👋"
+```
+
+## File maskot (folder `assets/maskot/`)
+
+| File | Ukuran | Dipakai untuk |
+|---|---|---|
+| `maskot-avatar.png` | 128×128 | Avatar bulat di bubble chat admin |
+| `maskot-sambutan.png` | 300 px | Maskot menyapa di halaman masuk |
+| `maskot-peek.png` | 220 px | Maskot mengintip di pojok kanan bawah |
+| `maskot.png` | 451×600 | Master transparan, untuk bikin ukuran lain |
+
+Semua sudah **berlatar transparan**. Kalau mau ganti maskot, timpa file-file
+di atas dengan gambar PNG transparan berukuran serupa — kode tidak perlu diubah.
+
+## Perilaku animasi
+
+- **Sambutan**: maskot bergoyang pelan (seperti melambai), gelembung ucapan
+  muncul menyusul setelah 0,35 detik.
+- **Peek**: maskot naik dari bawah layar, diam sebentar, lalu turun lagi —
+  berulang tiap 7 detik. Tidak bisa diklik, jadi tidak mengganggu tombol.
+- Pengguna dengan "reduce motion" aktif melihat maskot diam tanpa animasi.
