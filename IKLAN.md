@@ -110,10 +110,13 @@ MASKOT_SAPAAN = "Halo! Aku Aogi, temanmu di room ini. Yuk masuk 👋"
 
 | File | Ukuran | Dipakai untuk |
 |---|---|---|
-| `maskot-avatar.png` | 128×128 | Avatar bulat di bubble chat admin |
-| `maskot-sambutan.png` | 300 px | Maskot menyapa di halaman masuk |
-| `maskot-peek.png` | 220 px | Maskot mengintip di pojok kanan bawah |
-| `maskot.png` | 451×600 | Master transparan, untuk bikin ukuran lain |
+| `maskot-avatar.png` | 128×128 | Avatar bubble chat admin — **pose potret senyum** |
+| `maskot-sambutan.png` | 300 px | Halaman masuk — **pose melambai** |
+| `maskot-peek.png` | 220 px | Pojok kanan bawah room — **pose mengintip** |
+| `maskot.png` | 520 px | Master transparan, untuk bikin ukuran lain |
+
+Gaya gambar: **2D flat vector cartoon** (outline tegas, warna flat), bukan 3D.
+Tiap halaman memakai pose yang berbeda supaya maskot terasa hidup.
 
 Semua sudah **berlatar transparan**. Kalau mau ganti maskot, timpa file-file
 di atas dengan gambar PNG transparan berukuran serupa — kode tidak perlu diubah.
@@ -122,6 +125,7 @@ di atas dengan gambar PNG transparan berukuran serupa — kode tidak perlu diuba
 
 - **Sambutan**: maskot bergoyang pelan (seperti melambai), gelembung ucapan
   muncul menyusul setelah 0,35 detik.
-- **Peek**: maskot naik dari bawah layar, diam sebentar, lalu turun lagi —
-  berulang tiap 7 detik. Tidak bisa diklik, jadi tidak mengganggu tombol.
+- **Peek**: maskot naik dari balik tepi bawah layar, mengintip sambil
+  memiringkan kepala, lalu turun lagi — berulang tiap 9 detik. Tidak bisa
+  diklik dan berada di belakang kolom chat, jadi tidak mengganggu tombol.
 - Pengguna dengan "reduce motion" aktif melihat maskot diam tanpa animasi.

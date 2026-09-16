@@ -637,27 +637,30 @@ st.markdown(
       }
 
       /* ---------- Maskot: mengintip di pojok kanan bawah ---------- */
+      /* Pose peek: badan bawah terpotong & kaki memegang tepi, jadi maskot
+         benar-benar muncul dari balik tepi bawah layar. */
       .maskot-peek {
-        position:fixed; right:10px; bottom:86px; z-index:998;
-        width:96px; pointer-events:none;
-        filter: drop-shadow(0 10px 18px rgba(25,27,32,.30));
-        animation: maskotIntip 7s ease-in-out infinite;
+        position:fixed; right:14px; bottom:74px; z-index:1;
+        width:104px; pointer-events:none; user-select:none;
+        filter: drop-shadow(0 -4px 14px rgba(25,27,32,.26));
+        animation: maskotIntip 9s ease-in-out infinite;
         transform-origin: 50% 100%;
       }
       @keyframes maskotIntip {
-        0%, 8%    { transform: translateY(78%) rotate(6deg); opacity:.0; }
-        16%, 46%  { transform: translateY(6%) rotate(0deg);  opacity:1; }
-        54%, 62%  { transform: translateY(0%) rotate(-3deg); opacity:1; }
-        74%, 100% { transform: translateY(78%) rotate(6deg); opacity:0; }
+        0%, 6%    { transform: translateY(100%) rotate(0deg); }
+        14%, 34%  { transform: translateY(14%)  rotate(0deg); }
+        40%, 52%  { transform: translateY(8%)   rotate(-4deg); }
+        58%, 70%  { transform: translateY(14%)  rotate(3deg); }
+        82%, 100% { transform: translateY(100%) rotate(0deg); }
       }
       @media (max-width:600px) {
-        .maskot-peek { width:72px; bottom:78px; right:4px; }
+        .maskot-peek { width:74px; right:2px; bottom:68px; }
         .maskot-sambutan img { width:118px; }
         .maskot-balon { max-width:168px; font-size:.73rem; margin-bottom:26px; }
       }
       @media (prefers-reduced-motion: reduce) {
         .maskot-sambutan img, .maskot-balon { animation:none !important; }
-        .maskot-peek { animation:none !important; transform:translateY(6%); opacity:1; }
+        .maskot-peek { animation:none !important; transform:translateY(14%); }
       }
     </style>
     """,
