@@ -343,6 +343,12 @@ st.markdown(
       [data-testid="stChatMessageAvatarAssistant"],
       [data-testid="stChatMessageAvatarUser"],
       [data-testid="stChatMessageAvatarCustom"] { transform: scale(1.08); }
+            /* Ukuran avatar maskot di bubble chat admin */
+      [data-testid="stChatMessageAvatarCustom"] {
+        width: 24px !important;
+        height: 24px !important;
+        transform: none !important;
+      }
       @media (prefers-reduced-motion: reduce) {
          [data-testid="stChatMessage"] { animation:none !important; }
       }
