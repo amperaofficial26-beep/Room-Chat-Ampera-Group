@@ -616,7 +616,7 @@ st.markdown(
       .maskot-balon b { color:#C0801E; }
       @keyframes maskotLambai {
         0%,100% { transform: rotate(-1.6deg) translateY(0); }
-        50%     { transform: rotate(1.6deg) translateY(-5px); }
+        50%     { transform: rotate(1.6deg) translateY(5px); }
       }
       @keyframes balonMuncul {
         from { opacity:0; transform: translateY(8px) scale(.94); }
