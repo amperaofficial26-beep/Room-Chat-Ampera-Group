@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import html
 import random
+from functools import lru_cache
 from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -46,6 +47,56 @@ _TIMEOUT = 15
 # Ganti dengan link logo AOG kamu (upload logo.png ke repo ini, lalu isi
 # link "raw" GitHub-nya di sini — atau link gambar dari mana saja).
 LOGO_URL = "logo.png"
+
+# ---------------------------------------------------------------------------
+# BANNER IKLAN  (lihat panduan lengkap di IKLAN.md)
+# ---------------------------------------------------------------------------
+# Banner berganti otomatis dengan transisi halus (crossfade). Cukup ubah
+# daftar IKLAN di bawah ini — tidak perlu menyentuh kode lain.
+#
+# Satu banner = satu dict:
+#   "gambar"  : nama file di folder assets/iklan/  ATAU link gambar https://
+#   "label"   : tulisan kecil di pojok (mis. "PROMO", "BARU")
+#   "judul"   : judul besar
+#   "teks"    : keterangan singkat 1–2 baris
+#   "tombol"  : tulisan pada tombol (kosongkan "" kalau tanpa tombol)
+#   "link"    : alamat tujuan saat banner/tombol diklik ("" = tidak diklik)
+#   "tampil"  : "semua" (default) | "masuk" (halaman login) | "room"
+IKLAN_AKTIF = True        # False = semua banner disembunyikan
+IKLAN_DETIK = 6           # lama satu banner tampil (detik)
+
+IKLAN = [
+    {
+        "gambar": "iklan-1.jpg",
+        "label": "AMPERA OFFICIAL",
+        "judul": "Produk Resmi Ampera Official",
+        "teks": "Semua produk dijamin original, bergaransi, dan didampingi "
+                "admin resmi sampai beres.",
+        "tombol": "Lihat Produk",
+        "link": "https://room-chat-ampera-group.streamlit.app",
+        "tampil": "semua",
+    },
+    {
+        "gambar": "iklan-2.jpg",
+        "label": "PROMO",
+        "judul": "Diskon Spesial Bulan Ini",
+        "teks": "Harga khusus untuk pembelian pertama. Tanya admin di room "
+                "ini untuk dapat kode promonya.",
+        "tombol": "Klaim Promo",
+        "link": "https://room-chat-ampera-group.streamlit.app",
+        "tampil": "semua",
+    },
+    {
+        "gambar": "iklan-3.jpg",
+        "label": "LANGGANAN",
+        "judul": "Paket Langganan Digital",
+        "teks": "Aktivasi cepat, pembayaran mudah, dan bantuan admin setiap "
+                "hari kalau ada kendala.",
+        "tombol": "Cek Paket",
+        "link": "https://room-chat-ampera-group.streamlit.app",
+        "tampil": "semua",
+    },
+]
 
 def jam_wib() -> str:
     return datetime.now(WIB).strftime("%d %b %H:%M")
@@ -456,6 +507,85 @@ st.markdown(
       .jam .material-symbols-rounded { font-size:.84rem; font-variation-settings:'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20; }
 
       [data-testid="stExpander"] { border:none !important; background:transparent !important; }
+
+      /* ---------- Banner iklan (slider crossfade) ---------- */
+      .iklan-box {
+        position:relative; width:100%; margin:.35rem 0 1.05rem;
+        aspect-ratio: 16 / 6.2; min-height:150px;
+        border-radius:22px; overflow:hidden; isolation:isolate;
+        border:1px solid rgba(255,255,255,.55);
+        box-shadow:0 12px 32px rgba(25,27,32,.20), inset 0 1px 0 rgba(255,255,255,.45);
+        background:rgba(255,255,255,.28);
+        backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      }
+      .iklan-slide {
+        position:absolute; inset:0; opacity:0;
+        display:flex; align-items:flex-end;
+        text-decoration:none !important; color:#fff !important;
+        animation-timing-function: cubic-bezier(.4,0,.2,1);
+        animation-iteration-count: infinite;
+        animation-fill-mode: backwards;
+        will-change: opacity, transform;
+      }
+      .iklan-slide.tunggal { opacity:1; animation:none !important; }
+      .iklan-slide img {
+        position:absolute; inset:0; width:100%; height:100%;
+        object-fit:cover; z-index:0; transform:scale(1.03);
+        animation: iklanZoom 14s ease-in-out infinite alternate;
+      }
+      .iklan-slide::after {
+        content:""; position:absolute; inset:0; z-index:1;
+        background:linear-gradient(100deg, rgba(18,19,23,.90) 0%, rgba(18,19,23,.72) 42%, rgba(18,19,23,.20) 78%, rgba(18,19,23,.05) 100%);
+      }
+      .iklan-isi { position:relative; z-index:2; padding:.95rem 1.15rem; max-width:82%; }
+      .iklan-label {
+        display:inline-block; font-size:.56rem; font-weight:800; letter-spacing:.22em;
+        text-transform:uppercase; color:#EDEEF2;
+        background:rgba(255,255,255,.17); border:1px solid rgba(255,255,255,.34);
+        border-radius:999px; padding:3px 10px; margin-bottom:.42rem;
+        backdrop-filter:blur(6px);
+      }
+      .iklan-judul {
+        font-family:Georgia,"Times New Roman",serif; font-weight:600;
+        font-size:1.06rem; line-height:1.25; margin:0 0 .22rem; color:#FFFFFF;
+        text-shadow:0 2px 10px rgba(0,0,0,.35);
+      }
+      .iklan-teks {
+        font-size:.76rem; line-height:1.45; color:rgba(255,255,255,.86);
+        margin:0 0 .58rem;
+      }
+      .iklan-tombol {
+        display:inline-flex; align-items:center; gap:5px;
+        font-size:.72rem; font-weight:700; letter-spacing:.02em; color:#26272C;
+        background:linear-gradient(135deg,#FFFFFF,#DDDFE4);
+        border-radius:999px; padding:6px 15px;
+        box-shadow:0 6px 18px rgba(0,0,0,.28);
+        transition:transform .15s ease, box-shadow .15s ease;
+      }
+      .iklan-slide:hover .iklan-tombol { transform:translateY(-1px); box-shadow:0 8px 22px rgba(0,0,0,.34); }
+      .iklan-tombol .material-symbols-rounded { font-size:.9rem; }
+      .iklan-dots {
+        position:absolute; z-index:3; right:12px; bottom:11px;
+        display:flex; gap:6px;
+      }
+      .iklan-dot {
+        width:6px; height:6px; border-radius:999px;
+        background:rgba(255,255,255,.34);
+        animation-timing-function: linear; animation-iteration-count: infinite;
+        animation-fill-mode: backwards;
+      }
+      .iklan-dot.tunggal { background:rgba(255,255,255,.85); animation:none !important; }
+      @keyframes iklanZoom { from { transform:scale(1.03); } to { transform:scale(1.11); } }
+      @media (max-width:600px) {
+        .iklan-box { aspect-ratio: 16 / 8.4; min-height:158px; border-radius:18px; }
+        .iklan-isi { padding:.8rem .9rem; max-width:94%; }
+        .iklan-judul { font-size:.95rem; }
+        .iklan-teks { font-size:.72rem; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .iklan-slide, .iklan-slide img, .iklan-dot { animation:none !important; }
+        .iklan-slide:first-of-type { opacity:1 !important; }
+      }
     </style>
     """,
     unsafe_allow_html=True,
@@ -473,6 +603,138 @@ def _logo_html() -> str:
         return f'<div class="logo-wrap"><img src="{logo_src}" alt="Ampera Official Group" /></div>'
     except Exception:
         return '<div class="logo-wrap logo-fallback">AOG</div>'
+
+
+# ---------------------------------------------------------------------------
+# BANNER IKLAN — slider crossfade murni CSS (tidak perlu rerun/refresh)
+# ---------------------------------------------------------------------------
+_FADE = 0.9  # lama transisi crossfade antar banner (detik)
+
+
+@lru_cache(maxsize=32)
+def _sumber_gambar(nama_file: str) -> str:
+    """Kembalikan src gambar: link https dipakai apa adanya, file lokal
+    di folder assets/iklan/ diubah jadi data URI supaya selalu terbaca."""
+    n = (nama_file or "").strip()
+    if not n:
+        return ""
+    if n.startswith(("http://", "https://", "data:")):
+        return n
+    for kandidat in (
+        Path(__file__).resolve().parent / "assets" / "iklan" / n,
+        Path(__file__).resolve().parent / n,
+    ):
+        try:
+            data = kandidat.read_bytes()
+        except Exception:
+            continue
+        jenis = "jpeg" if kandidat.suffix.lower() in (".jpg", ".jpeg") else \
+                kandidat.suffix.lower().lstrip(".") or "png"
+        return f"data:image/{jenis};base64," + base64.b64encode(data).decode()
+    return ""
+
+
+def _keyframes_iklan(n: int, durasi: float) -> str:
+    """Bikin @keyframes untuk tiap slide + titik indikatornya."""
+    total = n * durasi
+    f = min(_FADE, durasi / 2)
+    p_in = f / total * 100          # selesai fade-in
+    p_hold = durasi / total * 100   # mulai fade-out
+    p_out = (durasi + f) / total * 100
+    p_balik = (total - f) / total * 100
+    css = [
+        "@keyframes iklanFade {"
+        f" 0%,{p_hold:.3f}% {{ opacity:1; }}"
+        f" {p_out:.3f}%,{p_balik:.3f}% {{ opacity:0; }}"
+        " 100% { opacity:1; } }",
+        "@keyframes iklanDot {"
+        f" 0%,{p_hold:.3f}% {{ background:rgba(255,255,255,.90); }}"
+        f" {p_out:.3f}%,{p_balik:.3f}% {{ background:rgba(255,255,255,.30); }}"
+        " 100% { background:rgba(255,255,255,.90); } }",
+    ]
+    _ = p_in
+    return "".join(css)
+
+
+@lru_cache(maxsize=4)
+def _iklan_html(area: str) -> str:
+    """HTML banner iklan untuk area tertentu: 'masuk' atau 'room'."""
+    if not IKLAN_AKTIF:
+        return ""
+    daftar = [
+        b for b in IKLAN
+        if str(b.get("tampil", "semua")).lower() in ("semua", area)
+    ]
+    slide, dots = [], []
+    n = len(daftar)
+    if n == 0:
+        return ""
+    durasi = max(2.0, float(IKLAN_DETIK))
+    total = n * durasi
+
+    for i, b in enumerate(daftar):
+        src = _sumber_gambar(str(b.get("gambar", "")))
+        judul = html.escape(str(b.get("judul", "")))
+        teks = html.escape(str(b.get("teks", "")))
+        label = html.escape(str(b.get("label", "")))
+        tombol = html.escape(str(b.get("tombol", "")))
+        link = str(b.get("link", "")).strip()
+
+        # Waktu mulai tiap slide diatur lewat animation-delay negatif,
+        # supaya slide pertama sudah tampil penuh sejak detik ke-0 dan
+        # tidak ada dua banner yang tumpuk saat halaman baru dibuka.
+        delay = i * durasi - total - min(_FADE, durasi / 2)
+        gaya_slide = ("" if n == 1 else
+                      f"animation-name:iklanFade;animation-duration:{total:g}s;"
+                      f"animation-delay:{delay:g}s;")
+        gaya_dot = ("" if n == 1 else
+                    f"animation-name:iklanDot;animation-duration:{total:g}s;"
+                    f"animation-delay:{delay:g}s;")
+
+        isi = []
+        if label:
+            isi.append(f'<span class="iklan-label">{label}</span>')
+        if judul:
+            isi.append(f'<div class="iklan-judul">{judul}</div>')
+        if teks:
+            isi.append(f'<div class="iklan-teks">{teks}</div>')
+        if tombol:
+            isi.append(
+                '<span class="iklan-tombol">' + tombol +
+                '<span class="material-symbols-rounded" aria-hidden="true">'
+                'arrow_forward</span></span>'
+            )
+        gambar = (f'<img src="{src}" alt="{judul or "Iklan"}" loading="lazy" />'
+                  if src else "")
+        badan = (f'{gambar}<div class="iklan-isi">{"".join(isi)}</div>')
+        kelas = "iklan-slide" + (" tunggal" if n == 1 else "")
+
+        if link.startswith(("http://", "https://")):
+            slide.append(
+                f'<a class="{kelas}" style="{gaya_slide}" href="{html.escape(link)}" '
+                f'target="_blank" rel="noopener noreferrer">{badan}</a>'
+            )
+        else:
+            slide.append(f'<div class="{kelas}" style="{gaya_slide}">{badan}</div>')
+        dots.append(
+            f'<span class="iklan-dot{" tunggal" if n == 1 else ""}" '
+            f'style="{gaya_dot}"></span>'
+        )
+
+    gaya = f"<style>{_keyframes_iklan(n, durasi)}</style>" if n > 1 else ""
+    return (
+        gaya
+        + '<div class="iklan-box" role="complementary" aria-label="Iklan">'
+        + "".join(slide)
+        + f'<div class="iklan-dots">{"".join(dots)}</div>'
+        + "</div>"
+    )
+
+
+def tampilkan_iklan(area: str) -> None:
+    kode = _iklan_html(area)
+    if kode:
+        st.markdown(kode, unsafe_allow_html=True)
 
 
 def _sapaan_pembuka(nama: str) -> str:
@@ -525,6 +787,8 @@ def halaman_masuk() -> None:
         "sampai ke admin.</div>",
         unsafe_allow_html=True,
     )
+
+    tampilkan_iklan("masuk")
 
     with st.container(border=True):
         st.markdown(
@@ -592,6 +856,8 @@ def halaman_room() -> None:
         'Setiap pesanmu langsung terkirim ke admin Ampera Official.</div>',
         unsafe_allow_html=True,
     )
+
+    tampilkan_iklan("room")
 
     # Panel kontak kecil di sisi kiri — bisa diisi / diganti kapan saja,
     # ikut terkirim di pesan berikutnya, jadi admin tahu harus membalas
