@@ -626,7 +626,7 @@ st.markdown(
       /* ---------- Maskot: mengintip di pojok kanan bawah ---------- */
       .maskot-peek {
         position:fixed; right:14px; bottom:74px; z-index:1;
-        width:104px; pointer-events:none; user-select:none;
+        width:80px; pointer-events:none; user-select:none;
         filter: drop-shadow(0 -4px 14px rgba(25,27,32,.26));
         animation: maskotIntip 9s ease-in-out infinite;
         transform-origin: 50% 100%;
@@ -639,8 +639,8 @@ st.markdown(
         82%, 100% { transform: translateY(100%) rotate(0deg); }
       }
       @media (max-width:600px) {
-        .maskot-peek { width:74px; right:2px; bottom:68px; }
-        .maskot-sambutan img { width:118px; }
+        .maskot-peek { width:55px; right:2px; bottom:68px; }
+        .maskot-sambutan img { width:105px; }
         .maskot-balon { max-width:168px; font-size:.73rem; margin-bottom:26px; }
       }
       @media (prefers-reduced-motion: reduce) {
