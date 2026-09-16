@@ -115,8 +115,9 @@ MASKOT_SAPAAN = "Halo! Aku Aogi, temanmu di room ini. Yuk masuk 👋"
 | `maskot-peek.png` | 220 px | Pojok kanan bawah room — **pose mengintip** |
 | `maskot.png` | 520 px | Master transparan, untuk bikin ukuran lain |
 
-Gaya gambar: **2D flat vector cartoon** (outline tegas, warna flat), bukan 3D.
-Tiap halaman memakai pose yang berbeda supaya maskot terasa hidup.
+Gaya gambar: **2D grafik anime** — cel shading lembut, mata besar berkilau,
+bukan 3D render. Tiap halaman memakai pose yang berbeda supaya maskot
+terasa hidup.
 
 Semua sudah **berlatar transparan**. Kalau mau ganti maskot, timpa file-file
 di atas dengan gambar PNG transparan berukuran serupa — kode tidak perlu diubah.
