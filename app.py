@@ -604,7 +604,7 @@ st.markdown(
         transform-origin: 50% 92%;
       }
       .maskot-balon {
-        position:relative; max-width:210px; margin-bottom:34px;
+        position:relative; max-width:205px; margin-bottom:34px;
         background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(238,239,243,.92));
         border:1px solid rgba(255,255,255,.95);
         border-radius:18px 18px 18px 5px;
