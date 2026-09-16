@@ -48,6 +48,14 @@ _TIMEOUT = 15
 # link "raw" GitHub-nya di sini — atau link gambar dari mana saja).
 LOGO_URL = "logo.png"
 # ---------------------------------------------------------------------------
+# MASKOT "AOGI"  (file ada di folder assets/maskot/)
+# ---------------------------------------------------------------------------
+MASKOT_NAMA = "Aogi"          # nama panggilan maskot di dalam app
+MASKOT_AVATAR = True          # wajah maskot jadi avatar bubble chat admin
+MASKOT_SAMBUTAN = True        # maskot menyapa di halaman masuk
+MASKOT_PEEK = True            # maskot mengintip di pojok kanan bawah room
+MASKOT_SAPAAN = "Halo! Aku Aogi, temanmu di room ini. Yuk masuk 👋"
+# ---------------------------------------------------------------------------
 # BANNER IKLAN  (lihat panduan lengkap di IKLAN.md)
 # ---------------------------------------------------------------------------
 # Banner berganti otomatis dengan transisi halus (crossfade). Cukup ubah
@@ -584,6 +592,61 @@ st.markdown(
         .iklan-slide, .iklan-slide img, .iklan-dot { animation:none !important; }
         .iklan-slide:first-of-type { opacity:1 !important; }
       }
+            /* ---------- Maskot: sambutan di halaman masuk ---------- */
+      .maskot-sambutan {
+        display:flex; align-items:flex-end; justify-content:center;
+        gap:.2rem; margin:.2rem 0 .35rem; position:relative;
+      }
+      .maskot-sambutan img {
+        width:148px; height:auto; display:block;
+        filter: drop-shadow(0 14px 22px rgba(25,27,32,.30));
+        animation: maskotLambai 4.2s ease-in-out infinite;
+        transform-origin: 50% 92%;
+      }
+      .maskot-balon {
+        position:relative; max-width:210px; margin-bottom:34px;
+        background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(238,239,243,.92));
+        border:1px solid rgba(255,255,255,.95);
+        border-radius:18px 18px 18px 5px;
+        padding:.6rem .8rem; font-size:.78rem; line-height:1.45; color:#32333A;
+        box-shadow:0 10px 26px rgba(25,27,32,.20);
+        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+        animation: balonMuncul .7s cubic-bezier(.16,1,.3,1) .35s backwards;
+      }
+      .maskot-balon b { color:#C0801E; }
+      @keyframes maskotLambai {
+        0%,100% { transform: rotate(-1.6deg) translateY(0); }
+        50%     { transform: rotate(1.6deg) translateY(-5px); }
+      }
+      @keyframes balonMuncul {
+        from { opacity:0; transform: translateY(8px) scale(.94); }
+        to   { opacity:1; transform: translateY(0) scale(1); }
+      }
+
+      /* ---------- Maskot: mengintip di pojok kanan bawah ---------- */
+      .maskot-peek {
+        position:fixed; right:14px; bottom:74px; z-index:1;
+        width:104px; pointer-events:none; user-select:none;
+        filter: drop-shadow(0 -4px 14px rgba(25,27,32,.26));
+        animation: maskotIntip 9s ease-in-out infinite;
+        transform-origin: 50% 100%;
+      }
+      @keyframes maskotIntip {
+        0%, 6%    { transform: translateY(100%) rotate(0deg); }
+        14%, 34%  { transform: translateY(14%)  rotate(0deg); }
+        40%, 52%  { transform: translateY(8%)   rotate(-4deg); }
+        58%, 70%  { transform: translateY(14%)  rotate(3deg); }
+        82%, 100% { transform: translateY(100%) rotate(0deg); }
+      }
+      @media (max-width:600px) {
+        .maskot-peek { width:74px; right:2px; bottom:68px; }
+        .maskot-sambutan img { width:118px; }
+        .maskot-balon { max-width:168px; font-size:.73rem; margin-bottom:26px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .maskot-sambutan img, .maskot-balon { animation:none !important; }
+        .maskot-peek { animation:none !important; transform:translateY(14%); }
+      }
     </style>
     """,
     unsafe_allow_html=True,
@@ -731,6 +794,50 @@ def tampilkan_iklan(area: str) -> None:
     if kode:
         st.markdown(kode, unsafe_allow_html=True)
 
+# ---------------------------------------------------------------------------
+# MASKOT "AOGI"
+# ---------------------------------------------------------------------------
+@lru_cache(maxsize=8)
+def _maskot_src(nama_file: str) -> str:
+    """Baca file maskot dari assets/maskot/ jadi data URI."""
+    berkas = Path(__file__).resolve().parent / "assets" / "maskot" / nama_file
+    try:
+        return ("data:image/png;base64,"
+                + base64.b64encode(berkas.read_bytes()).decode())
+    except Exception:
+        return ""
+
+
+def maskot_sambutan() -> None:
+    """Maskot menyapa di halaman masuk, lengkap dengan gelembung ucapan."""
+    if not MASKOT_SAMBUTAN:
+        return
+    src = _maskot_src("maskot-sambutan.png")
+    if not src:
+        return
+    pesan = html.escape(MASKOT_SAPAAN).replace(
+        html.escape(MASKOT_NAMA), f"<b>{html.escape(MASKOT_NAMA)}</b>", 1
+    )
+    st.markdown(
+        '<div class="maskot-sambutan">'
+        f'<img src="{src}" alt="{html.escape(MASKOT_NAMA)}" />'
+        f'<div class="maskot-balon">{pesan}</div>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def maskot_peek() -> None:
+    """Maskot mengintip dari pojok kanan bawah room."""
+    if not MASKOT_PEEK:
+        return
+    src = _maskot_src("maskot-peek.png")
+    if src:
+        st.markdown(
+            f'<img class="maskot-peek" src="{src}" alt="" aria-hidden="true" />',
+            unsafe_allow_html=True,
+        )
+
 
 def _sapaan_pembuka(nama: str) -> str:
     return (
@@ -755,8 +862,12 @@ def _bubble(m: dict) -> None:
             'RESMI</span>'
         )
     avatar = ":material/verified_user:" if resmi else ":material/person:"
-    with st.chat_message("assistant" if resmi else "user", avatar=avatar):
-        st.markdown(
+    if resmi and MASKOT_AVATAR:                              # ← TAMBAHKAN
+        berkas = (Path(__file__).resolve().parent            #   5 baris
+                  / "assets" / "maskot" / "maskot-avatar.png")
+        if berkas.is_file():
+            avatar = str(berkas)
+    with st.chat_message("assistant" if resmi else "user", avatar=avatar):        st.markdown(
             f"{label}"
             f'<div class="bubble-text">{teks}</div>'
             '<span class="jam">'
@@ -782,6 +893,8 @@ def halaman_masuk() -> None:
         "sampai ke admin.</div>",
         unsafe_allow_html=True,
     )
+   
+    maskot_sambutan()
 
     with st.container(border=True):
         st.markdown(
@@ -885,6 +998,8 @@ def halaman_room() -> None:
                   "in_kontak_edit"):
             st.session_state.pop(k, None)
         st.rerun()
+   
+    maskot_peek()                   
 
     teks = st.chat_input("Tulis pesan…")
     if teks and teks.strip():
