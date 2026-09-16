@@ -598,7 +598,7 @@ st.markdown(
         gap:.2rem; margin:.2rem 0 .35rem; position:relative;
       }
       .maskot-sambutan img {
-        width:110px; height:auto; display:block;
+        width:105px; height:auto; display:block;
         filter: drop-shadow(0 14px 22px rgba(25,27,32,.30));
         animation: maskotLambai 4.2s ease-in-out infinite;
         transform-origin: 50% 92%;
