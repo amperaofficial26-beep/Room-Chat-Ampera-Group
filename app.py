@@ -54,7 +54,6 @@ MASKOT_NAMA = "Aogi"          # nama panggilan maskot di dalam app
 MASKOT_AVATAR = True          # wajah maskot jadi avatar bubble chat admin
 MASKOT_SAMBUTAN = True        # maskot menyapa di halaman masuk
 MASKOT_PEEK = True            # maskot mengintip di pojok kanan bawah room
-MASKOT_SAPAAN = "Halo! Aku Aogi, temanmu di room ini. Yuk masuk 👋"
 # ---------------------------------------------------------------------------
 # BANNER IKLAN  (lihat panduan lengkap di IKLAN.md)
 # ---------------------------------------------------------------------------
@@ -186,10 +185,13 @@ def init_state() -> None:
 # ---------------------------------------------------------------------------
 # TAMPILAN
 # ---------------------------------------------------------------------------
-st.markdown(
-    """
-    <style>
+# ---------------------------------------------------------------------------
+# CSS — dibagi tiga: dasar (semua halaman), halaman masuk, halaman room
+# ---------------------------------------------------------------------------
+_CSS_DASAR = """
+<style>
       @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap');
 
       .material-symbols-rounded {
         font-family: 'Material Symbols Rounded';
@@ -212,6 +214,265 @@ st.markdown(
       }
       .inline-icon { margin-right: .38rem; }
 
+</style>
+"""
+
+st.markdown(_CSS_DASAR, unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------------------
+# CSS HALAMAN MASUK — desain baru: silver terang, DM Serif Display + Inter
+# ---------------------------------------------------------------------------
+_CSS_MASUK = """
+<style>
+      /* ====== HALAMAN MASUK — desain baru (DM Serif Display + Inter) ====== */
+
+      /* Header bawaan Streamlit disembunyikan supaya bersih seperti desain */
+      [data-testid="stHeader"] { display: none !important; }
+      footer[data-testid="stFooter"], .stAppViewFooter { display: none !important; }
+
+      /* Font dasar halaman: Inter */
+      .stApp, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"] {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      }
+      .stApp input, .stApp button, .stApp textarea { font-family: inherit !important; }
+
+      /* Latar: silver terang + cahaya lembut dari atas */
+      .stApp, .appview-container, [data-testid="stAppViewContainer"] {
+        background:
+          radial-gradient(circle at 50% 25%, rgba(255,255,255,.95), transparent 34%),
+          linear-gradient(135deg, #d2d4d9 0%, #e8e9ed 45%, #cdd0d6 100%) !important;
+        background-attachment: fixed !important;
+      }
+      /* Kilasan cahaya diagonal melintang halaman */
+      .stApp::before {
+        content: ""; position: fixed; inset: -20%; pointer-events: none; z-index: 0;
+        background:
+          linear-gradient(115deg, transparent 30%, rgba(255,255,255,.65) 42%, transparent 52%),
+          linear-gradient(65deg, transparent 55%, rgba(255,255,255,.5) 63%, transparent 72%);
+        transform: rotate(-8deg); opacity: .65;
+      }
+      /* Lingkaran cahaya besar di kanan bawah */
+      .stApp::after {
+        content: ""; position: fixed; width: 700px; height: 700px; right: -280px; bottom: -300px;
+        border-radius: 50%; pointer-events: none; z-index: 0;
+        background: radial-gradient(circle, rgba(255,255,255,.65), transparent 65%);
+      }
+
+      /* Lebar halaman seperti desain: min(1180px, 92%) */
+      section[data-testid="stMainBlockContainer"], .block-container {
+        position: relative; z-index: 2;
+        max-width: calc(1180px + 8vw) !important;
+        padding: 38px max(1rem, 4vw) 28px !important;
+      }
+
+      /* Jarak bawaan antar elemen dimatikan — jarak diatur oleh CSS desain */
+      [data-testid="stElementContainer"], .stElement { margin-bottom: 0 !important; }
+      [data-testid="stVerticalBlock"] { gap: 0 !important; }
+
+      /* Grid konten: maskot kiri, form kanan (jarak 45px seperti desain) */
+      [data-testid="stHorizontalBlock"] { gap: 45px !important; }
+      [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child {
+        display: flex; flex-direction: column; justify-content: center;
+      }
+
+      /* ---------- Brand ---------- */
+      .brand { text-align: center; }
+      .brand .logo {
+        width: 145px; height: 145px; margin: 0 auto 32px; display: block;
+        border-radius: 27px; object-fit: cover;
+        box-shadow: 0 15px 35px rgba(50,52,58,.20), 0 0 0 1px rgba(255,255,255,.9);
+      }
+      .brand .logo.logo-fallback {
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; color: #55575e; background: rgba(255,255,255,.55);
+      }
+      .eyebrow {
+        display: flex; justify-content: center; align-items: center; gap: 18px;
+        margin-bottom: 10px; color: #62656d; font-size: 13px; font-weight: 700;
+        letter-spacing: 6px; text-transform: uppercase;
+      }
+      .eyebrow::before, .eyebrow::after { content: ""; width: 72px; height: 1px; flex: 0 0 auto; }
+      .eyebrow::before { background: linear-gradient(90deg, transparent, #8f9299); }
+      .eyebrow::after { background: linear-gradient(90deg, #8f9299, transparent); }
+      .brand h1.judul-besar {
+        font-family: "DM Serif Display", Georgia, serif !important;
+        font-size: clamp(42px, 6vw, 76px) !important;
+        line-height: .98 !important; letter-spacing: 1px !important;
+        font-weight: 400 !important;
+        color: #303238 !important; margin: 0 !important; padding: 0 !important;
+        text-shadow: 0 2px 0 rgba(255,255,255,.8), 0 8px 25px rgba(50,52,58,.13);
+      }
+      .subtitle {
+        margin-top: 20px !important; font-size: 12px; font-weight: 700;
+        letter-spacing: 7px; color: #858891;
+      }
+      .description {
+        max-width: 720px; margin: 32px auto 28px !important; text-align: center;
+        font-size: 16px !important; line-height: 1.8 !important; color: #6d717a !important;
+      }
+
+      /* ---------- Maskot Aogi ---------- */
+      .mascot-area {
+        position: relative; min-height: 420px;
+        display: flex; align-items: flex-end; justify-content: center;
+      }
+      .mascot-glow {
+        position: absolute; width: 330px; height: 330px; bottom: 20px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,255,255,.15) 58%, transparent 70%);
+        filter: blur(8px);
+      }
+      .mascot {
+        position: relative; z-index: 2; width: min(390px, 100%);
+        filter: drop-shadow(0 25px 22px rgba(40,42,48,.22));
+      }
+      .speech {
+        position: absolute; left: 0; bottom: 38px; z-index: 4; max-width: 245px;
+        padding: 18px 22px; color: #fff;
+        background: linear-gradient(145deg, rgba(46,47,53,.94), rgba(74,76,84,.92));
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 20px 20px 20px 5px;
+        box-shadow: 0 15px 35px rgba(30,31,36,.22);
+      }
+      .speech strong { display: block; margin-bottom: 6px; font-size: 17px; }
+      .speech span { font-size: 14px; line-height: 1.5; color: #e8e8eb; }
+
+      /* ---------- Empat kartu keunggulan ---------- */
+      .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 25px 0 28px; }
+      .feature { text-align: center; padding: 10px 4px; }
+      .feature-icon {
+        width: 58px; height: 58px; margin: auto auto 10px;
+        display: flex; align-items: center; justify-content: center; border-radius: 50%;
+        background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(220,222,227,.7));
+        border: 1px solid rgba(255,255,255,.9);
+        box-shadow: 0 8px 20px rgba(70,72,78,.12);
+      }
+      .feature-icon span { font-size: 22px; }
+      .feature strong { display: block; font-size: 13px; margin-bottom: 5px; color: #34363d; }
+      .feature small { display: block; color: #858891; font-size: 11px; line-height: 1.4; }
+
+      /* ---------- Kartu form (room-card) ---------- */
+      .st-key-kartu_masuk,
+      [data-testid="stColumn"]:last-child [data-testid="stVerticalBlock"] [data-testid="stVerticalBlock"] {
+        border-radius: 28px !important;
+        background: linear-gradient(145deg, rgba(255,255,255,.76), rgba(235,237,241,.63)) !important;
+        border: 1px solid rgba(255,255,255,.92) !important;
+        box-shadow: 0 25px 55px rgba(55,57,64,.16), inset 0 1px 0 rgba(255,255,255,.95) !important;
+        backdrop-filter: blur(25px) !important; -webkit-backdrop-filter: blur(25px) !important;
+        padding: 34px !important;
+      }
+      .card-title { margin-bottom: 24px; }
+      .card-title .card-eyebrow {
+        display: block; margin-bottom: 7px; font-size: 12px; font-weight: 700;
+        letter-spacing: 5px; color: #666a73; text-transform: uppercase;
+      }
+      .card-title h2 {
+        font-size: 25px !important; font-weight: 700 !important; letter-spacing: normal !important;
+        color: #34363d !important; margin: 0 0 5px !important; padding: 0 !important;
+      }
+      .card-title p { color: #858891; font-size: 13px; margin: 0; }
+
+      /* Label & kolom isian seperti desain */
+      [data-testid="stWidgetLabel"] { margin-bottom: 8px !important; padding-left: 4px !important; }
+      [data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] span,
+      [data-testid="stWidgetLabel"] p {
+        font-size: 12px !important; font-weight: 600 !important; color: #555861 !important;
+        margin: 0 !important; padding: 0 !important; letter-spacing: normal !important;
+        line-height: 1.4 !important;
+      }
+      [data-testid="stWidgetLabel"] span { display: block; }
+      [data-testid="stTextInput"] { margin-bottom: 17px; }
+      [data-testid="stTextInput"] input {
+        height: 58px !important; min-height: 58px !important;
+        border-radius: 15px !important;
+        border: 1px solid rgba(255,255,255,.9) !important;
+        background: rgba(250,251,253,.82) !important;
+        color: #383a40 !important; font-size: 14px !important;
+        padding: 0 19px !important;
+        box-shadow: inset 0 2px 7px rgba(80,82,88,.04) !important;
+      }
+      [data-testid="stTextInput"] input::placeholder { color: #9a9da5 !important; }
+      [data-testid="stTextInput"]:focus-within input {
+        border-color: rgba(90,93,102,.35) !important;
+        box-shadow: 0 0 0 4px rgba(80,83,92,.07) !important;
+      }
+
+      /* Tombol "Masuk Room" */
+      .stButton button[kind="primary"], [data-testid="stBaseButton-primary"] {
+        height: 58px !important; min-height: 58px !important; width: 100%;
+        margin-top: 5px; border-radius: 16px !important; border: none !important;
+        background: linear-gradient(135deg, #34353b, #55575e) !important;
+        color: #fff !important; font-size: 14px !important; font-weight: 700 !important;
+        box-shadow: 0 12px 25px rgba(43,44,49,.23) !important;
+        transition: transform .2s ease, box-shadow .2s ease !important;
+      }
+      .stButton button[kind="primary"]:hover, [data-testid="stBaseButton-primary"]:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #34353b, #55575e) !important;
+        box-shadow: 0 16px 30px rgba(43,44,49,.28) !important;
+        border: none !important; color: #fff !important;
+      }
+      .stButton button[kind="primary"]:focus:not(:focus-visible),
+      [data-testid="stBaseButton-primary"]:focus:not(:focus-visible) {
+        box-shadow: 0 12px 25px rgba(43,44,49,.23) !important;
+      }
+
+      /* ---------- Footer ---------- */
+      .footer {
+        margin-top: 45px; display: flex; justify-content: space-between;
+        align-items: flex-end; color: #7e828a;
+      }
+      .footer-brand { font-size: 11px; letter-spacing: 4px; font-weight: 700; }
+      .footer-brand span {
+        display: block; margin-top: 7px; font-size: 9px; letter-spacing: 3px; font-weight: 500;
+      }
+      .footer-slogan {
+        font-family: "DM Serif Display", Georgia, serif !important; font-style: italic;
+        font-size: 19px; line-height: 1.1; text-align: right; color: #666971;
+      }
+
+      /* ---------- Responsive ---------- */
+      @media (max-width: 850px) {
+        [data-testid="stHorizontalBlock"] { flex-direction: column !important; gap: 15px !important; }
+        [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { flex: 0 0 auto !important; width: 100% !important; }
+        section[data-testid="stMainBlockContainer"], .block-container { padding-top: 25px !important; }
+        .brand .logo { width: 110px; height: 110px; margin-bottom: 25px; }
+        .brand h1.judul-besar { font-size: 42px !important; }
+        .mascot-area { min-height: 330px; }
+        .mascot { width: 300px; }
+        .speech { left: 50%; transform: translateX(-50%); bottom: 5px; }
+        .features { grid-template-columns: repeat(2, 1fr); margin-top: 10px; }
+        .st-key-kartu_masuk { padding: 25px !important; }
+      }
+      @media (max-width: 520px) {
+        section[data-testid="stMainBlockContainer"], .block-container {
+          padding: 20px max(1rem, 4vw) 28px !important;
+        }
+        .eyebrow { font-size: 9px; letter-spacing: 3px; }
+        .eyebrow::before, .eyebrow::after { width: 30px; }
+        .brand h1.judul-besar { font-size: 35px !important; }
+        .subtitle { font-size: 9px; letter-spacing: 4px; }
+        .description { font-size: 13px !important; }
+        .mascot-area { min-height: 290px; }
+        .mascot { width: 250px; }
+        .speech { padding: 13px 17px; }
+        .speech strong { font-size: 15px; }
+        .speech span { font-size: 12px; }
+        .feature-icon { width: 48px; height: 48px; }
+        .st-key-kartu_masuk { border-radius: 22px !important; padding: 20px !important; }
+        .footer { flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+        .footer-slogan { text-align: center !important; }
+      }
+
+</style>
+"""
+
+
+# ---------------------------------------------------------------------------
+# CSS HALAMAN ROOM — tampilan room saat ini (menunggu desain halaman chat)
+# ---------------------------------------------------------------------------
+_CSS_ROOM = """
+<style>
       /* ---------- Latar: silver + charcoal terang, bergerak ---------- */
       .stApp, .appview-container, [data-testid="stAppViewContainer"] {
          background:
@@ -598,38 +859,7 @@ st.markdown(
         .iklan-slide, .iklan-slide img, .iklan-dot { animation:none !important; }
         .iklan-slide:first-of-type { opacity:1 !important; }
       }
-            /* ---------- Maskot: sambutan di halaman masuk ---------- */
-      .maskot-sambutan {
-        display:flex; align-items:flex-end; justify-content:center;
-        gap:.2rem; margin:.2rem 0 .35rem; position:relative;
-      }
-      .maskot-sambutan img {
-        width:105px; height:auto; display:block;
-        filter: drop-shadow(0 14px 22px rgba(25,27,32,.30));
-        animation: maskotLambai 4.2s ease-in-out infinite;
-        transform-origin: 50% 92%;
-      }
-      .maskot-balon {
-        position:relative; max-width:205px; margin-bottom:34px;
-        background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(238,239,243,.92));
-        border:1px solid rgba(255,255,255,.95);
-        border-radius:18px 18px 18px 5px;
-        padding:.6rem .8rem; font-size:.78rem; line-height:1.45; color:#32333A;
-        box-shadow:0 10px 26px rgba(25,27,32,.20);
-        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-        animation: balonMuncul .7s cubic-bezier(.16,1,.3,1) .35s backwards;
-      }
-      .maskot-balon b { color:#C0801E; }
-      @keyframes maskotLambai {
-        0%,100% { transform: rotate(-1.6deg) translateY(0); }
-        50%     { transform: rotate(1.6deg) translateY(5px); }
-      }
-      @keyframes balonMuncul {
-        from { opacity:0; transform: translateY(8px) scale(.94); }
-        to   { opacity:1; transform: translateY(0) scale(1); }
-      }
-
-      /* ---------- Maskot: mengintip di pojok kanan bawah ---------- */
+            /* ---------- Maskot: mengintip di pojok kanan bawah ---------- */
       .maskot-peek {
         position:fixed; right:14px; bottom:74px; z-index:1;
         width:80px; pointer-events:none; user-select:none;
@@ -646,30 +876,41 @@ st.markdown(
       }
       @media (max-width:600px) {
         .maskot-peek { width:55px; right:2px; bottom:68px; }
-        .maskot-sambutan img { width:105px; }
-        .maskot-balon { max-width:168px; font-size:.73rem; margin-bottom:26px; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .maskot-sambutan img, .maskot-balon { animation:none !important; }
         .maskot-peek { animation:none !important; transform:translateY(14%); }
       }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+
+</style>
+"""
 
 
-def _logo_html() -> str:
-    # Embed logo sebagai data URI agar gambar lokal repo selalu terbaca,
-    # termasuk saat working directory Streamlit berbeda.
+# ---------------------------------------------------------------------------
+# LOGO
+# ---------------------------------------------------------------------------
+@lru_cache(maxsize=1)
+def _logo_src() -> str:
+    """Logo sebagai data URI supaya selalu terbaca walau working directory
+    Streamlit berbeda dari folder repo. Kosong kalau file logo tidak ada."""
     try:
         logo_path = Path(__file__).resolve().parent / LOGO_URL
         with open(logo_path, "rb") as f:
-            logo_b64 = base64.b64encode(f.read()).decode("utf-8")
-        logo_src = f"data:image/png;base64,{logo_b64}"
-        return f'<div class="logo-wrap"><img src="{logo_src}" alt="Ampera Official Group" /></div>'
+            return "data:image/png;base64," + base64.b64encode(f.read()).decode("utf-8")
     except Exception:
-        return '<div class="logo-wrap logo-fallback">AOG</div>'
+        return ""
+
+
+def _logo_html() -> str:
+    """Logo dalam kotak kaca dengan kilatan cahaya (dipakai halaman room)."""
+    src = _logo_src()
+    if src:
+        return (
+            '<div class="logo-wrap"><img src="' + src + '" '
+            'alt="Ampera Official Group" /></div>'
+        )
+    return '<div class="logo-wrap logo-fallback">AOG</div>'
+
+
 
 # ---------------------------------------------------------------------------
 # BANNER IKLAN — slider crossfade murni CSS (tidak perlu rerun/refresh)
@@ -814,22 +1055,92 @@ def _maskot_src(nama_file: str) -> str:
         return ""
 
 
-def maskot_sambutan() -> None:
-    """Maskot menyapa di halaman masuk, lengkap dengan gelembung ucapan."""
+# ---------------------------------------------------------------------------
+# POTONGAN HTML HALAMAN MASUK (desain baru)
+# ---------------------------------------------------------------------------
+def _html_brand() -> str:
+    """Bagian paling atas: logo, sapaan kecil, judul besar, dan deskripsi."""
+    src = _logo_src()
+    if src:
+        logo = f'<img class="logo" src="{src}" alt="Ampera Official Group" />'
+    else:
+        logo = '<div class="logo logo-fallback">AOG</div>'
+    return (
+        '<section class="brand">'
+        + logo
+        + '<div class="eyebrow">Selamat Datang Di</div>'
+        + '<h1 class="judul-besar">AMPERA OFFICIAL GROUP</h1>'
+        + '<div class="subtitle">ROOM CHAT RESMI</div>'
+        + '<p class="description">Mau tanya-tanya atau berlangganan produk '
+        'Ampera Official? Masuk dengan nama panggilanmu — tanpa daftar, '
+        'tanpa akun. Setiap pesanmu langsung sampai ke admin.</p>'
+        + '</section>'
+    )
+
+
+def _html_maskot() -> str:
+    """Area maskot Aogi: lingkaran cahaya, gambar maskot, balon sapaan."""
     if not MASKOT_SAMBUTAN:
-        return
+        return ""
     src = _maskot_src("maskot-sambutan.png")
     if not src:
-        return
-    pesan = html.escape(MASKOT_SAPAAN).replace(
-        html.escape(MASKOT_NAMA), f"<b>{html.escape(MASKOT_NAMA)}</b>", 1
+        return ""
+    nama = html.escape(MASKOT_NAMA)
+    return (
+        '<div class="mascot-area">'
+        '<div class="mascot-glow"></div>'
+        f'<img class="mascot" src="{src}" alt="Maskot {nama}" />'
+        '<div class="speech">'
+        f'<strong>Halo! Aku {nama} 👋</strong>'
+        '<span>Temanmu di room ini. Yuk masuk!</span>'
+        '</div>'
+        '</div>'
     )
-    st.markdown(
-        '<div class="maskot-sambutan">'
-        f'<img src="{src}" alt="{html.escape(MASKOT_NAMA)}" />'
-        f'<div class="maskot-balon">{pesan}</div>'
-        "</div>",
-        unsafe_allow_html=True,
+
+
+# Empat keunggulan room yang tampil di samping maskot.
+_FITUR = [
+    ("⚡", "Respon Cepat", "Langsung ke admin"),
+    ("🛡", "Aman &amp; Terpercaya", "Komunitas resmi"),
+    ("♧", "Dukungan Penuh", "Untuk semua kebutuhan"),
+    ("☆", "Bergabung Sekarang", "Mudah &amp; Gratis"),
+]
+
+
+def _html_fitur() -> str:
+    """Grid empat kartu keunggulan di atas kartu form."""
+    kartu = []
+    for ikon, judul, keterangan in _FITUR:
+        kartu.append(
+            '<div class="feature">'
+            f'<div class="feature-icon"><span>{ikon}</span></div>'
+            f'<strong>{judul}</strong>'
+            f'<small>{keterangan}</small>'
+            '</div>'
+        )
+    return '<div class="features">' + "".join(kartu) + '</div>'
+
+
+def _html_kartu_judul() -> str:
+    """Judul kecil di dalam kartu form."""
+    return (
+        '<div class="card-title">'
+        '<span class="card-eyebrow">MASUK KE ROOM</span>'
+        '<h2>Bergabung dengan Ampera</h2>'
+        '<p>Isi data di bawah untuk bergabung dengan room chat.</p>'
+        '</div>'
+    )
+
+
+def _html_footer() -> str:
+    """Footer halaman masuk: nama brand di kiri, slogan di kanan."""
+    return (
+        '<footer class="footer">'
+        '<div class="footer-brand">AMPERA OFFICIAL GROUP'
+        '<span>• SAFE • FAST • TOGETHER •</span>'
+        '</div>'
+        '<div class="footer-slogan">More Than Just a Group</div>'
+        '</footer>'
     )
 
 
@@ -884,66 +1195,56 @@ def _bubble(m: dict) -> None:
 
 
 def halaman_masuk() -> None:
-    st.markdown(_logo_html(), unsafe_allow_html=True)
-    st.markdown(
-        '<div class="room-head"><h1 class="judul">Ampera Official Group</h1>'
-        '<div class="sub">ROOM CHAT RESMI</div>'
-        '<div class="garis"></div></div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div style="text-align:center;color:#6E6E76;font-size:.86rem;'
-        'margin:.9rem 0 1.3rem;line-height:1.5;">Mau tanya-tanya atau '
-        "berlangganan produk Ampera Official? Masuk dengan nama "
-        "panggilanmu — tanpa daftar, tanpa akun. Setiap pesanmu langsung "
-        "sampai ke admin.</div>",
-        unsafe_allow_html=True,
-    )
-   
-    maskot_sambutan()
+    """Halaman pertama: sambutan, maskot Aogi, dan form masuk room."""
+    st.markdown(_CSS_MASUK, unsafe_allow_html=True)
+    st.markdown(_html_brand(), unsafe_allow_html=True)
 
-    with st.container(border=True):
-        st.markdown(
-            '<div style="text-align:center;font-size:.72rem;'
-            'letter-spacing:.18em;color:#9A9AA2;font-weight:600;'
-            'margin-bottom:.6rem;">MASUK KE ROOM</div>',
-            unsafe_allow_html=True,
-        )
-        nama = st.text_input(
-            "Nama panggilan kamu",
-            max_chars=20,
-            placeholder="misal: Budi",
-            key="in_nama",
-        )
-        kontak = st.text_input(
-            "Email / No. HP kamu (opsional)",
-            max_chars=60,
-            placeholder="biar admin bisa membalas kamu",
-            key="in_kontak",
-        )
-        if st.button(":material/login: Masuk Room", use_container_width=True, type="primary",
-                     key="btn_masuk"):
-            nama_bersih = " ".join((nama or "").split())
-            if not nama_bersih:
-                st.warning("Isi dulu nama panggilanmu ya.")
-            elif ("ampera" in nama_bersih.lower()
-                  and "official" in nama_bersih.lower()):
-                st.error("Nama itu khusus admin resmi. Pilih nama lain ya.")
-            else:
-                st.session_state.masuk = True
-                st.session_state.nama = nama_bersih
-                st.session_state.tag = str(random.randint(100, 999))
-                st.session_state.kontak = " ".join((kontak or "").split())
-                st.session_state.pesan = [{
-                    "pengirim": "Ampera Official",
-                    "resmi": True,
-                    "teks": _sapaan_pembuka(nama_bersih),
-                    "jam": jam_wib(),
-                }]
-                st.rerun()
+    # Grid konten: maskot di kiri, kartu fitur + form di kanan.
+    kol_maskot, kol_form = st.columns([0.9, 1.1], gap="large")
+    with kol_maskot:
+        st.markdown(_html_maskot(), unsafe_allow_html=True)
+    with kol_form:
+        st.markdown(_html_fitur(), unsafe_allow_html=True)
+        with st.container(border=True, key="kartu_masuk"):
+            st.markdown(_html_kartu_judul(), unsafe_allow_html=True)
+            nama = st.text_input(
+                "Nama panggilan kamu",
+                max_chars=20,
+                placeholder="misal: Budi",
+                key="in_nama",
+            )
+            kontak = st.text_input(
+                "Email / No. HP kamu (opsional)",
+                max_chars=60,
+                placeholder="biar admin bisa membalas kamu",
+                key="in_kontak",
+            )
+            if st.button("↪  Masuk Room  →", use_container_width=True,
+                         type="primary", key="btn_masuk"):
+                nama_bersih = " ".join((nama or "").split())
+                if not nama_bersih:
+                    st.warning("Isi dulu nama panggilanmu ya.")
+                elif ("ampera" in nama_bersih.lower()
+                      and "official" in nama_bersih.lower()):
+                    st.error("Nama itu khusus admin resmi. Pilih nama lain ya.")
+                else:
+                    st.session_state.masuk = True
+                    st.session_state.nama = nama_bersih
+                    st.session_state.tag = str(random.randint(100, 999))
+                    st.session_state.kontak = " ".join((kontak or "").split())
+                    st.session_state.pesan = [{
+                        "pengirim": "Ampera Official",
+                        "resmi": True,
+                        "teks": _sapaan_pembuka(nama_bersih),
+                        "jam": jam_wib(),
+                    }]
+                    st.rerun()
+
+    st.markdown(_html_footer(), unsafe_allow_html=True)
 
 
 def halaman_room() -> None:
+    st.markdown(_CSS_ROOM, unsafe_allow_html=True)
     st.markdown(_logo_html(), unsafe_allow_html=True)
     st.markdown(
         '<div class="room-head"><h1 class="judul">Ampera Official Group</h1>'
